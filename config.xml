@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+	<name>showcase</name>
+	<displayName><![CDATA[Showcase with Nivo Slider]]></displayName>
+	<version><![CDATA[0.1]]></version>
+	<description><![CDATA[A slideshow which use the jQuery framework and Nivo Slider jQuery plugin]]></description>
+	<author><![CDATA[Pierrick CAEN]]></author>
+	<tab><![CDATA[advertising_marketing]]></tab>
+	<is_configurable>1</is_configurable>
+	<need_instance>1</need_instance>
+	<limited_countries></limited_countries>
+</module>

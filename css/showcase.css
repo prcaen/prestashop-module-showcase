@@ -1,0 +1,15 @@
+#showcase-wrap {position: relative; overflow: auto; height: 360px; width:1017px}
+#showcase {width:1000px; height: 360px; position:relative}
+#showcase img {position: static}
+#nivo-html-captions {position: absolute; top: 0; left: 0; width: 1000px}
+.nivo-html-caption, .nivo-caption {display: block; height: 360px; background: none;position: relative}
+.nivo-html-caption p, .nivo-caption p {position: absolute; top: 60px; left: 225px; color: #fff}
+.nivo-html-caption p strong, .nivo-caption p strong {font:italic bold 3.4em Georgia, "Times New Roman", Times, serif}
+.nivo-html-caption p em, .nivo-caption p em {font:normal normal 1.4em "Myriad Pro", sans-serif;}
+.nivo-html-caption p a, .nivo-caption p a {margin: 35px 0 0 55px;display:block;background-color:#e15b49;border-radius:10px;color:#FFF;display:block !important;font:italic bold .95em Georgia, "Times New Roman", Times, serif;height:17px;padding:10px 15px;text-align:center;text-shadow:0 2px 2px rgba(120,28,47,0.85);width:192px;}
+.nivo-caption p a {margin-top: 20px}
+.nivo-controlNav {position:absolute;top:10px;z-index:12}
+.nivo-controlNav-left {left:10px;}
+.nivo-controlNav-right {right:10px;}
+.nivo-controlNav a.nivo-control {cursor:pointer;display:block;margin-bottom:10px; border: 1px solid rgba(0,0,0,0); width:133px; height:105px}
+.nivo-controlNav a.active {border:1px #95d4dc solid;}
