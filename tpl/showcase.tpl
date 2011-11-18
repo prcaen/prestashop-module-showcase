@@ -48,10 +48,8 @@
       $('#showcase-wrap').css({
         'overflow' : 'hidden','width' : '1000px'
       });
-      var caption = $('.nivo-html-caption p').html();
-      $('.nivo-html-caption').remove('p').html(caption);
-      $('.nivo-html-caption').hide();
       $('#showcase img').css('position', 'absolute');
+      $('.nivo-html-caption').hide();
       /* End Disable accessibility without JS */
 
       $('#showcase').nivoSlider({
@@ -87,11 +85,11 @@
   <div id="nivo-html-captions">
     {foreach from=$slides item=slide name=infoLoop}
     <div id="info-{$smarty.foreach.infoLoop.index}" class="nivo-html-caption">
-      <p>
+      <div class="inner-caption">
         <strong>{$slide.title}</strong><br />
         <em>{$slide.subtitle}</em><br />
         <a href="{$slide.button_link}">{$slide.button_text}</a>
-      </p>
+      </div>
     </div>
     {/foreach}
   </div>
