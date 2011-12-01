@@ -11,12 +11,12 @@
 * to license@prestashop.com so we can send you a copy immediately.
 *
 *  @author    Pierrick CAEN <prcaen@gmail.com>
-*  @copyright 2011-2012 PrestaShop SA
-*  @version   0.1
+*  @copyright 2011-2012 Pierrick CAEN
+*  @version   0.2
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 */
 
-require_once _PS_MODULE_DIR_ . 'showcase/classes/phpthumb/ThumbLib.inc.php';
+require_once _PS_MODULE_DIR_ . 'showcase/phpthumb/ThumbLib.inc.php';
 
 class Showcase extends Module
 {
@@ -30,7 +30,7 @@ class Showcase extends Module
   {
     $this->name    = 'showcase';
     $this->tab     = 'advertising_marketing';
-    $this->version = 0.1;
+    $this->version = 0.2;
     $this->author  = 'Pierrick CAEN';
 
     parent::__construct();
@@ -38,99 +38,286 @@ class Showcase extends Module
     $this->displayName      = $this->l('Showcase with Nivo Slider');
     $this->description      = $this->l('A slideshow which use the jQuery framework and Nivo Slider jQuery plugin');
     
-    $this->_showcase_img_path     = _PS_MODULE_DIR_ . $this->name . '/images/';
+    $this->_showcase_img_path     = _PS_MODULE_DIR_ . $this->name . '/img/';
     $this->_showcase_slides_path  = $this->_showcase_img_path . 'slides/';
     $this->_showcase_thumbs_path  = $this->_showcase_img_path . 'thumbs/';
     $this->_showcase_sources_path = $this->_showcase_img_path . 'sources/';
+    
+    $this->_config = array(
+      'defaultsValues' => array(
+        'Images' => array(
+          array(
+            'name'  => 'SHOWCASE_IMG_NUMBER',
+            'id'    => 'showcase_image_number',
+            'title' => 'Image number',
+            'type'  => 'text',
+            'value' => 3,
+            'help'  => ''
+          ),
+          array(
+            'name'  => 'SHOWCASE_IMG_WIDTH',
+            'id'    => 'showcase_image_width',
+            'title' => 'Image width',
+            'type'  => 'text',
+            'value' => 1000,
+            'help'  => 'Provide a value in pixel. Ex: 960'
+          ),
+          array(
+            'name'  => 'SHOWCASE_IMG_HEIGHT',
+            'id'    => 'showcase_image_height',
+            'title' => 'Image height',
+            'type'  => 'text',
+            'value' => 360,
+            'help'  => 'Provide a value in pixel. Ex: 360'
+          ),
+          array(
+            'name'  => 'SHOWCASE_USE_IMG_TITLE',
+            'id'    => 'showcase_image_use_title',
+            'title' => 'Image title and subtitle',
+            'type'  => 'radio',
+            'value' => 1,
+            'help'  => 'Check it if you want to display a title and a subtitle'
+          )
+        ),
+        'Thumbs' => array(
+          array(
+            'name'  => 'SHOWCASE_THBS_DIFFERENT',
+            'id'    => 'showcase_thumbs_different',
+            'title' => 'Upload a different thumb ?',
+            'type'  => 'radio',
+            'value' => 1,
+            'help'  => 'Check it if you want to display a title and a subtitle'
+          ),
+          array(
+            'name'  => 'SHOWCASE_THBS_WIDTH',
+            'id'    => 'showcase_thumbs_width',
+            'title' => 'Thumbs width',
+            'type'  => 'text',
+            'value' => 133,
+            'help'  => 'Provide a value in pixel. Ex: 260'
+          ),
+          array(
+            'name'  => 'SHOWCASE_THBS_HEIGHT',
+            'id'    => 'showcase_thumbs_height',
+            'title' => 'Thumbs height',
+            'type'  => 'text',
+            'value' => 115,
+            'help'  => 'Provide a value in pixel. Ex: 60'
+          ),
+          array(
+            'name'  => 'SHOWCASE_THBS_ALIGN',
+            'id'    => 'showcase_thumbs_align',
+            'title' => 'Thumbs align',
+            'type'  => 'radio',
+            'value' => 'left'
+          ),
+          array(
+            'name'  => 'SHOWCASE_THBS_BORDER_COLOR',
+            'type'  => 'text',
+            'id'    => 'showcase_thumbs_border_color',
+            'title' => 'Choose the active thumb border color',
+            'value' => '#95d4dc',
+            'help'  => 'Provide a value in hexa. Ex: #FFF'
+          ),
+          array(
+            'name'  => 'SHOWCASE_THBS_BORDER_SIZE',
+            'type'  => 'text',
+            'id'    => 'showcase_thumbs_border_size',
+            'title' => 'Choose the active thumb border size',
+            'value' => 1,
+            'help'  => 'Provide a value in pixel. Ex: 1'
+          ),
+          array(
+            'name'  => 'SHOWCASE_THBS_FADEIN',
+            'type'  => 'radio',
+            'id'    => 'showcase_thumbs_fadein',
+            'title' => 'FadeIn on active thumb ?',
+            'value' => 1
+          )
+        ),
+        'Buttons' => array(
+          array(
+            'name'  => 'SHOWCASE_BTN_COLOR',
+            'type'  => 'text',
+            'id'    => 'showcase_button_color',
+            'title' => 'Button color',
+            'value' => '#e15b49',
+            'help'  => 'Provide a value in hexa. Ex: #000'
+          ),
+          array(
+            'name'  => 'SHOWCASE_BTN_BORDER_RADIUS',
+            'type'  => 'text',
+            'id'    => 'showcase_button_border_radius',
+            'title' => 'Button border radius',
+            'value' => 3,
+            'help'  => 'Provide a value in pixel. Ex: 3'
+          )
+        ),
+        'Nivo Slider' => array(
+          array(
+            'name'  => 'SHOWCASE_NIVO_SLIDER_EFFECT',
+            'type'  => 'select',
+            'id'    => 'showcase_nivo_slider_effect',
+            'title' => 'Effect',
+            'value' => 'fade',
+            'options' => array(
+              'sliceDown',
+              'sliceDownLeft',
+              'sliceUp',
+              'sliceUpLeft',
+              'sliceUpDown',
+              'sliceUpDownLeft',
+              'fold',
+              'fade',
+              'random',
+              'slideInRight',
+              'slideInLeft',
+              'boxRandom',
+              'boxRain',
+              'boxRainReverse',
+              'boxRainGrow',
+              'boxRainGrowReverse'
+            ),
+            'help' => ''
+          ),
+          array(
+            'name'  => 'SHOWCASE_NIVO_SLIDER_SLICES',
+            'id'    => 'showcase_nivo_slider_slices',
+            'title' => 'Slices',
+            'type'  => 'text',
+            'value' => 15,
+            'help' => ''
+          ),
+          array(
+            'name'  => 'SHOWCASE_NIVO_SLIDER_BOX_COLS',
+            'id'    => 'showcase_nivo_slider_box_cols',
+            'title' => 'Box cols',
+            'type'  => 'text',
+            'value' => 8,
+            'help' => 'For box animations'
+          ),
+          array(
+            'name'  => 'SHOWCASE_NIVO_SLIDER_BOX_ROWS',
+            'id'    => 'showcase_nivo_slider_box_rows',
+            'title' => 'Box rows',
+            'type'  => 'text',
+            'value' => 4,
+            'help' => 'For box animations'
+          ),
+          array(
+            'name'  => 'SHOWCASE_NIVO_SLIDER_ANIM_SPEED',
+            'id'    => 'showcase_nivo_slider_anim_speed',
+            'title' => 'Animation speed',
+            'type'  => 'text',
+            'value' => 500,
+            'help'  => 'Slide transition speed'
+          ),
+          array(
+            'name'  => 'SHOWCASE_NIVO_SLIDER_PAUSE_TIME',
+            'id'    => 'showcase_nivo_slider_pause_time',
+            'title' => 'Animation time pause',
+            'type'  => 'text',
+            'value' => 0,
+            'help'  => 'How long each slide will show'
+          ),
+          array(
+            'name'  => 'SHOWCASE_NIVO_SLIDER_START_SLIDE',
+            'id'    => 'showcase_nivo_slider_start_slide',
+            'title' => 'Start slide',
+            'type'  => 'text',
+            'value' => 0,
+            'help'  => 'Set starting Slide (0 index)'
+          ),
+          array(
+            'name'  => 'SHOWCASE_NIVO_SLIDER_PAUSE_OVER',
+            'id'    => 'showcase_nivo_slider_keyboard_pause_on_over',
+            'title' => 'Pause on over',
+            'type'  => 'radio',
+            'value' => 1,
+            'help'  => 'Stop animation while hovering'
+          ),
+          array(
+            'name'  => 'SHOWCASE_NIVO_SLIDER_KEYBD_NAV',
+            'id'    => 'showcase_nivo_slider_keyboard_nav',
+            'title' => 'Keyboard navigation',
+            'type'  => 'radio',
+            'value' => 1,
+            'help' => 'Use left & right keyboard arrows'
+          )
+        )
+      ),
+      'defaultsMedia' => array(
+        'SHOWCASE_IMG_TITLE_' => 'Lookbook',
+        'SHOWCASE_IMG_SUBTITLE_' => 'PRINTEMPS-ÉTÉ 2011',
+        'SHOWCASE_IMG_SLIDE_' => 'showcase_img_',
+        'SHOWCASE_IMG_BUTTON_TXT_' => 'Accédez au lookbook',
+        'SHOWCASE_IMG_BUTTON_LINK_' => 'http://www.google.fr'
+      )
+    );
   }
   
   public function install()
   {
-  	if (   !parent::install()
-  	    || !$this->registerHook('home')
-  	    || !$this->registerHook('header')
-  	    || !Configuration::updateValue('SHOWCASE_IMG_NUMBER', 3)
-  		  || !Configuration::updateValue('SHOWCASE_IMG_WIDTH', 1000)
-  		  || !Configuration::updateValue('SHOWCASE_IMG_HEIGHT', 360)
-  		  || !Configuration::updateValue('SHOWCASE_USE_IMG_TITLE', 1)
-  		  || !Configuration::updateValue('SHOWCASE_THBS_DIFFERENT', 1)
-  		  || !Configuration::updateValue('SHOWCASE_THBS_WIDTH', 133)
-  		  || !Configuration::updateValue('SHOWCASE_THBS_HEIGHT', 115)
-  		  || !Configuration::updateValue('SHOWCASE_THBS_ALIGN', 'left')
-  		  || !Configuration::updateValue('SHOWCASE_THBS_BORDER_COLOR', '#95d4dc')
-  		  || !Configuration::updateValue('SHOWCASE_THBS_BORDER_SIZE', 1)
-  		  || !Configuration::updateValue('SHOWCASE_THBS_FADEIN', 1)
-  		  || !Configuration::updateValue('SHOWCASE_BTN_BORDER_RADIUS', 3)
-  		  || !Configuration::updateValue('SHOWCASE_BTN_COLOR', '#e15b49')
-  		  || !Configuration::updateValue('SHOWCASE_IMG_TITLE_1', 'Lookbook')
-  		  || !Configuration::updateValue('SHOWCASE_IMG_TITLE_2', 'Lookbook')
-  		  || !Configuration::updateValue('SHOWCASE_IMG_TITLE_3', 'Lookbook')
-  		  || !Configuration::updateValue('SHOWCASE_IMG_SUBTITLE_1', 'PRINTEMPS-ÉTÉ 2011')
-  		  || !Configuration::updateValue('SHOWCASE_IMG_SUBTITLE_2', 'PRINTEMPS-ÉTÉ 2011')
-  		  || !Configuration::updateValue('SHOWCASE_IMG_SUBTITLE_3', 'PRINTEMPS-ÉTÉ 2011')
-  		  || !Configuration::updateValue('SHOWCASE_IMG_SLIDE_1', 'showcase_img_1.jpg')
-  		  || !Configuration::updateValue('SHOWCASE_IMG_SLIDE_2', 'showcase_img_2.jpg')
-  		  || !Configuration::updateValue('SHOWCASE_IMG_SLIDE_3', 'showcase_img_3.jpg')
-  		  || !Configuration::updateValue('SHOWCASE_IMG_BUTTON_TXT_1', 'Accédez au lookbook')
-  		  || !Configuration::updateValue('SHOWCASE_IMG_BUTTON_TXT_2', 'Accédez au lookbook')
-  		  || !Configuration::updateValue('SHOWCASE_IMG_BUTTON_TXT_3', 'Accédez au lookbook')
-  		  || !Configuration::updateValue('SHOWCASE_IMG_BUTTON_LINK_1', 'http://www.google.fr')
-  		  || !Configuration::updateValue('SHOWCASE_IMG_BUTTON_LINK_2', 'http://www.prestashop.com')
-  		  || !Configuration::updateValue('SHOWCASE_IMG_BUTTON_LINK_3', 'http://www.jquery.com')
-  		  || !Configuration::updateValue('SHOWCASE_NIVO_SLIDER_EFFECT', 'fade')
-  		  || !Configuration::updateValue('SHOWCASE_NIVO_SLIDER_SLICES', 15)
-  		  || !Configuration::updateValue('SHOWCASE_NIVO_SLIDER_BOX_COLS', 8)
-  		  || !Configuration::updateValue('SHOWCASE_NIVO_SLIDER_BOX_ROWS', 4)
-  		  || !Configuration::updateValue('SHOWCASE_NIVO_SLIDER_ANIM_SPEED', 500)
-  		  || !Configuration::updateValue('SHOWCASE_NIVO_SLIDER_PAUSE_TIME', 3000)
-  		  || !Configuration::updateValue('SHOWCASE_NIVO_SLIDER_START_SLIDE', 0)
-  		  || !Configuration::updateValue('SHOWCASE_NIVO_SLIDER_PAUSE_OVER', 0)
-  		  || !Configuration::updateValue('SHOWCASE_NIVO_SLIDER_KEYBD_NAV', 0))
-  		return false;
+    if(!parent::install())
+      return false;
+    
+    // Register hooks
+    if(!$this->registerHook('home') || !$this->registerHook('header'))
+      return false;
+    
+    foreach ($this->_config['defaultsValues'] as $key => $type)
+    {
+      foreach ($type as $value)
+      {
+        if(!Configuration::updateValue($value['name'], $value['value']))
+          return false;
+      }
+    }
+    
+	  for($i = 1; $i <= $this->_config['defaultsValues']['Images'][0]['value']; $i++)
+	  {
+      foreach ($this->_config['defaultsMedia'] as $media => $value)
+      {
+        if($key == 'SHOWCASE_IMG_SLIDE_')
+        {
+          if(!Configuration::updateValue($media . $i, $value . $i))
+            return false;
+        }
+        else
+        {
+          if(!Configuration::updateValue($media . $i, $value))
+            return false;
+        }
+      }
+    }
+
   	return true;
   }
   
   public function uninstall()
   {
-    if (   !parent::uninstall()
-        || !Configuration::deleteByName('SHOWCASE_IMG_NUMBER')
-  		  || !Configuration::deleteByName('SHOWCASE_IMG_WIDTH')
-  		  || !Configuration::deleteByName('SHOWCASE_IMG_HEIGHT')
-  		  || !Configuration::deleteByName('SHOWCASE_USE_IMG_TITLE')
-  		  || !Configuration::deleteByName('SHOWCASE_THBS_DIFFERENT')
-  		  || !Configuration::deleteByName('SHOWCASE_THBS_WIDTH')
-  		  || !Configuration::deleteByName('SHOWCASE_THBS_HEIGHT')
-  		  || !Configuration::deleteByName('SHOWCASE_THBS_ALIGN')
-  		  || !Configuration::deleteByName('SHOWCASE_THBS_BORDER_COLOR')
-  		  || !Configuration::deleteByName('SHOWCASE_THBS_BORDER_SIZE')
-  		  || !Configuration::deleteByName('SHOWCASE_THBS_FADEIN')
-  		  || !Configuration::deleteByName('SHOWCASE_BTN_BORDER_RADIUS')
-  		  || !Configuration::deleteByName('SHOWCASE_BTN_COLOR')
-  		  || !Configuration::deleteByName('SHOWCASE_IMG_TITLE_1')
-  		  || !Configuration::deleteByName('SHOWCASE_IMG_TITLE_2')
-  		  || !Configuration::deleteByName('SHOWCASE_IMG_TITLE_3')
-  		  || !Configuration::deleteByName('SHOWCASE_IMG_SUBTITLE_1')
-  		  || !Configuration::deleteByName('SHOWCASE_IMG_SUBTITLE_2')
-  		  || !Configuration::deleteByName('SHOWCASE_IMG_SUBTITLE_3')
-  		  || !Configuration::deleteByName('SHOWCASE_IMG_SLIDE_1')
-  		  || !Configuration::deleteByName('SHOWCASE_IMG_SLIDE_2')
-  		  || !Configuration::deleteByName('SHOWCASE_IMG_SLIDE_3')
-  		  || !Configuration::deleteByName('SHOWCASE_IMG_BUTTON_TXT_1')
-  		  || !Configuration::deleteByName('SHOWCASE_IMG_BUTTON_TXT_2')
-  		  || !Configuration::deleteByName('SHOWCASE_IMG_BUTTON_TXT_3')
-  		  || !Configuration::deleteByName('SHOWCASE_IMG_BUTTON_LINK_1')
-  		  || !Configuration::deleteByName('SHOWCASE_IMG_BUTTON_LINK_2')
-  		  || !Configuration::deleteByName('SHOWCASE_IMG_BUTTON_LINK_3')
-  		  || !Configuration::deleteByName('SHOWCASE_NIVO_SLIDER_EFFECT')
-  		  || !Configuration::deleteByName('SHOWCASE_NIVO_SLIDER_SLICES')
-  		  || !Configuration::deleteByName('SHOWCASE_NIVO_SLIDER_BOX_COLS')
-  		  || !Configuration::deleteByName('SHOWCASE_NIVO_SLIDER_BOX_ROWS')
-  		  || !Configuration::deleteByName('SHOWCASE_NIVO_SLIDER_ANIM_SPEED')
-  		  || !Configuration::deleteByName('SHOWCASE_NIVO_SLIDER_PAUSE_TIME')
-  		  || !Configuration::deleteByName('SHOWCASE_NIVO_SLIDER_START_SLIDE')
-  		  || !Configuration::deleteByName('SHOWCASE_NIVO_SLIDER_PAUSE_OVER')
-  		  || !Configuration::deleteByName('SHOWCASE_NIVO_SLIDER_KEYBD_NAV'))
-  		return false;
+    if(!parent::uninstall())
+      return false;
+    
+    foreach ($this->_config['defaultsValues'] as $key => $type)
+    {
+      foreach ($type as $value)
+      {
+        if(!Configuration::deleteByName($value['name']))
+          return false;
+      }
+    }
+    
+    for($i = 1; $i <= Configuration::get('SHOWCASE_IMG_NUMBER'); $i++)
+    {
+      foreach ($this->_config['defaultsMedia'] as $media => $value)
+      {
+        if(!Configuration::deleteByName($media . $i))
+          return false;
+      }
+    }
+
+    return true;
   }
   
   /**
@@ -182,165 +369,56 @@ class Showcase extends Module
       $output .= '      <input type="text" name="showcase_img_button_link_' . $i . '" id="showcase_img_button_link_' . $i . '" value="' . Configuration::get('SHOWCASE_IMG_BUTTON_LINK_' . $i). '" />';
       $output .= '    </p>';
     }
+
     $output .= '    <p style="text-align: center">';
     $output .= '      <input type="submit" class="button" name="submit_showcase_img" value="'.$this->l('Validate').'"/>';
     $output .= '    </p>';
     $output .= '  </fieldset>';
     $output .= '  <fieldset>';
     $output .= '    <legend>' . $this->l('Showcase configuration') . '</legend>';
-    $output .= '    <fieldset style="font-size: 1em; margin-bottom: 1em">';
-    $output .= '      <legend>' . $this->l('Images') . '</legend>';
-    $output .= '      <p>';
-    $output .= '        <label for="showcase_image_number">' . $this->l('Image number') . '</label>';
-    $output .= '        <input type="text" name="showcase_image_number" id="showcase_image_number" value="' . Configuration::get('SHOWCASE_IMG_NUMBER') . '" />';
-    $output .= '      </p>';
-    $output .= '      <p>';
-    $output .= '        <label for="showcase_image_width">' . $this->l('Image width') . '</label>';
-    $output .= '        <input type="text" name="showcase_image_width" id="showcase_image_width" value="' . Configuration::get('SHOWCASE_IMG_WIDTH') . '" />';
-    $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l('Provide a value in pixel. Ex: 960') . '</em>';
-    $output .= '      </p>';
-    $output .= '      <p>';
-    $output .= '        <label for="showcase_image_height">' . $this->l('Image height') . '</label>';
-    $output .= '        <input type="text" name="showcase_image_height" id="showcase_image_height" value="' . Configuration::get('SHOWCASE_IMG_HEIGHT') . '" />';
-    $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l('Provide a value in pixel. Ex: 360') . '</em>';
-    $output .= '      </p>';
-    $output .= '      <p>';
-    $output .= '        <label>' . $this->l('Image title and subtitle') . '</label>';
-    $output .= '        <input type="radio" name="showcase_image_use_title" id="showcase_image_use_title_yes" value="1"' . (Configuration::get('SHOWCASE_USE_IMG_TITLE') == 1 ? 'checked="checked"' : '' ) . ' />';
-    $output .= '        <label for="showcase_image_use_title_yes" class="t"><img src="../img/admin/enabled.gif" alt="' . $this->l('Enabled') . '" title="' . $this->l('Enabled') . '"></label>';
-    $output .= '        <input type="radio" name="showcase_image_use_title" id="showcase_image_use_title_no" value="0"' . (Configuration::get('SHOWCASE_USE_IMG_TITLE') == 0 ? 'checked="checked"' : '' ) . ' />';
-    $output .= '        <label for="showcase_image_use_title_no" class="t"><img src="../img/admin/disabled.gif" alt="' . $this->l('Disabled') . '" title="' . $this->l('Disabled') . '"></label>';
-    $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l('Check it if you want to display a title and a subtitle') . '</em>';
-    $output .= '      </p>';
-    $output .= '    </fieldset>';
-    $output .= '    <fieldset style="font-size: 1em; margin-bottom: 1em">';
-    $output .= '      <legend>' . $this->l('Thumbs') . '</legend>';
-    $output .= '      <p>';
-    $output .= '        <label style="width: 201px">' . $this->l('Upload a different thumb ?') . '</label>';
-    $output .= '        <input type="radio" name="showcase_thumbs_different" id="showcase_thumbs_different_yes" value="1"' . (Configuration::get('SHOWCASE_THBS_DIFFERENT') == 1 ? 'checked="checked"' : '' ) . ' />';
-    $output .= '        <label for="showcase_thumbs_different_yes" class="t"><img src="../img/admin/enabled.gif" alt="' . $this->l('Enabled') . '" title="' . $this->l('Enabled') . '"></label>';
-    $output .= '        <input type="radio" name="showcase_thumbs_different" id="showcase_thumbs_different_no" value="0"' . (Configuration::get('SHOWCASE_THBS_DIFFERENT') == 0 ? 'checked="checked"' : '' ) . ' />';
-    $output .= '        <label for="showcase_thumbs_different_no" class="t"><img src="../img/admin/disabled.gif" alt="' . $this->l('Disabled') . '" title="' . $this->l('Disabled') . '"></label>';
-    $output .= '      </p>';
-    $output .= '      <p>';
-    $output .= '        <label for="showcase_thumbs_width">' . $this->l('Thumbs width') . '</label>';
-    $output .= '        <input type="text" name="showcase_thumbs_width" id="showcase_thumbs_width" value="' . Configuration::get('SHOWCASE_THBS_WIDTH') . '" />';
-    $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l('Provide a value in pixel. Ex: 260') . '</em>';
-    $output .= '      </p>';
-    $output .= '      <p>';
-    $output .= '        <label for="showcase_thumbs_height">' . $this->l('Thumbs height') . '</label>';
-    $output .= '        <input type="text" name="showcase_thumbs_height" id="showcase_thumbs_height" value="' . Configuration::get('SHOWCASE_THBS_HEIGHT') . '" />';
-    $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l('Provide a value in pixel. Ex: 60') . '</em>';
-    $output .= '      </p>';
-    $output .= '      <p>';
-    $output .= '        <label>' . $this->l('Thumbs align') . '</label>';
-    $output .= '        <input type="radio" name="showcase_thumbs_align" id="showcase_thumbs_align_left" value="left"' . (Configuration::get('SHOWCASE_THBS_ALIGN') == 'left' ? 'checked="checked"' : '' ) . ' />';
-    $output .= '        <label for="showcase_thumbs_align_left" class="t">' . $this->l('left') . '</label>';
-    $output .= '        <input type="radio" name="showcase_thumbs_align" id="showcase_thumbs_align_right" value="right"' . (Configuration::get('SHOWCASE_THBS_ALIGN') == 'right' ? 'checked="checked"' : '' ) . ' />';
-    $output .= '        <label for="showcase_thumbs_align_right" class="t">' . $this->l('right') . '</label>';
-    $output .= '      </p>';
-    $output .= '      <p>';
-    $output .= '        <label for="showcase_thumbs_border_color">' . $this->l('Choose the active thumb border color') . '</label>';
-    $output .= '        <input type="text" name="showcase_thumbs_border_color" id="showcase_thumbs_border_color" value="' . Configuration::get('SHOWCASE_THBS_BORDER_COLOR') . '" />';
-    $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l('Provide a value in hexa. Ex: #FFF') . '</em>';
-    $output .= '      </p>';
-    $output .= '      <p>';
-    $output .= '        <label for="showcase_thumbs_border_size">' . $this->l('Choose the active thumb border size') . '</label>';
-    $output .= '        <input type="text" name="showcase_thumbs_border_size" id="showcase_thumbs_border_size" value="' . Configuration::get('SHOWCASE_THBS_BORDER_SIZE') . '" />';
-    $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l('Provide a value in pixel. Ex: 1') . '</em>';
-    $output .= '      </p>';
-    $output .= '      <p>';
-    $output .= '        <label>' . $this->l('FadeIn on active thumb ?') . '</label>';
-    $output .= '        <input type="radio" name="showcase_thumbs_fadein" id="showcase_thumbs_fadein_yes" value="1"' . (Configuration::get('SHOWCASE_THBS_FADEIN') == 1 ? 'checked="checked"' : '' ) . ' />';
-    $output .= '        <label for="showcase_thumbs_fadein_yes" class="t"><img src="../img/admin/enabled.gif" alt="' . $this->l('Enabled') . '" title="' . $this->l('Enabled') . '"></label>';
-    $output .= '        <input type="radio" name="showcase_thumbs_fadein" id="showcase_thumbs_fadein_no" value="0"' . (Configuration::get('SHOWCASE_THBS_FADEIN') == 0 ? 'checked="checked"' : '' ) . ' />';
-    $output .= '        <label for="showcase_thumbs_fadein_no" class="t"><img src="../img/admin/disabled.gif" alt="' . $this->l('Disabled') . '" title="' . $this->l('Disabled') . '"></label>';
-    $output .= '      </p>';
-    $output .= '    </fieldset>';
-    $output .= '    <fieldset style="font-size: 1em; margin-bottom: 1em">';
-    $output .= '      <legend>' . $this->l('Buttons') . '</legend>';
-    $output .= '      <p>';
-    $output .= '        <label for="showcase_button_color">' . $this->l('Button color') . '</label>';
-    $output .= '        <input type="text" name="showcase_button_color" id="showcase_button_color" value="' . Configuration::get('SHOWCASE_BTN_COLOR') . '" />';
-    $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l('Provide a value in hexa. Ex: #000') . '</em>';
-    $output .= '      </p>';
-    $output .= '      <p>';
-    $output .= '        <label for="showcase_button_border_radius">' . $this->l('Button border radius') . '</label>';
-    $output .= '        <input type="text" name="showcase_button_border_radius" id="showcase_button_border_radius" value="' . Configuration::get('SHOWCASE_BTN_BORDER_RADIUS') . '" />';
-    $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l('Provide a value in pixel. Ex: 3') . '</em>';
-    $output .= '      </p>';
-    $output .= '    </fieldset>';
-    $output .= '    <fieldset style="font-size: 1em; margin-bottom: 1em">';
-    $output .= '      <legend>' . $this->l('Nivo Slider') . '</legend>';
-    $output .= '      <p>';
-    $output .= '        <label for="showcase_nivo_slider_effect">' . $this->l('Effect') . '</label>';
-    $output .= '        <select name="showcase_nivo_slider_effect" id="showcase_nivo_slider_effect">';
-    $output .= '          <option value="sliceDown" ' . (Configuration::get('SHOWCASE_NIVO_SLIDER_EFFECT') == 'sliceDown' ? 'selected="selected"' : '') . '>sliceDown</option>';
-    $output .= '          <option value="sliceDownLeft" ' . (Configuration::get('SHOWCASE_NIVO_SLIDER_EFFECT') == 'sliceDownLeft' ? 'selected="selected"' : '') . '>sliceDownLeft</option>';
-    $output .= '          <option value="sliceUp" ' . (Configuration::get('SHOWCASE_NIVO_SLIDER_EFFECT') == 'sliceUp' ? 'selected="selected"' : '' ). '>sliceUp</option>';
-    $output .= '          <option value="sliceUpLeft" ' . (Configuration::get('SHOWCASE_NIVO_SLIDER_EFFECT') == 'sliceUpLeft' ? 'selected="selected"' : '' ). '>sliceUp</option>';
-    $output .= '          <option value="sliceUpDown" ' . (Configuration::get('SHOWCASE_NIVO_SLIDER_EFFECT') == 'sliceUpDown' ? 'selected="selected"' : '' ). '>sliceUpDown</option>';
-    $output .= '          <option value="sliceUpDownLeft" ' . (Configuration::get('SHOWCASE_NIVO_SLIDER_EFFECT') == 'sliceUpDownLeft' ? 'selected="selected"' : '' ). '>sliceUpDownLeft</option>';
-    $output .= '          <option value="fold" ' . (Configuration::get('SHOWCASE_NIVO_SLIDER_EFFECT') == 'fold' ? 'selected="selected"' : '' ). '>fold</option>';
-    $output .= '          <option value="fade" ' . (Configuration::get('SHOWCASE_NIVO_SLIDER_EFFECT') == 'fade' ? 'selected="selected"' : '' ). '>fade</option>';
-    $output .= '          <option value="random" ' . (Configuration::get('SHOWCASE_NIVO_SLIDER_EFFECT') == 'random' ? 'selected="selected"' : '' ). '>random</option>';
-    $output .= '          <option value="slideInRight" ' . (Configuration::get('SHOWCASE_NIVO_SLIDER_EFFECT') == 'slideInRight' ? 'selected="selected"' : '' ). '>slideInRight</option>';
-    $output .= '          <option value="slideInLeft" ' . (Configuration::get('SHOWCASE_NIVO_SLIDER_EFFECT') == 'slideInLeft' ? 'selected="selected"' : '' ). '>slideInLeft</option>';
-    $output .= '          <option value="boxRandom" ' . (Configuration::get('SHOWCASE_NIVO_SLIDER_EFFECT') == 'boxRandom' ? 'selected="selected"' : '' ). '>boxRandom</option>';
-    $output .= '          <option value="boxRain" ' . (Configuration::get('SHOWCASE_NIVO_SLIDER_EFFECT') == 'boxRain' ? 'selected="selected"' : '' ). '>boxRain</option>';
-    $output .= '          <option value="boxRainReverse" ' . (Configuration::get('SHOWCASE_NIVO_SLIDER_EFFECT') == 'boxRainReverse' ? 'selected="selected"' : '' ). '>boxRainReverse</option>';
-    $output .= '          <option value="boxRainGrow" ' . (Configuration::get('SHOWCASE_NIVO_SLIDER_EFFECT') == 'boxRainGrow' ? 'selected="selected"' : '' ). '>boxRainGrow</option>';
-    $output .= '          <option value="boxRainGrowReverse" ' . (Configuration::get('SHOWCASE_NIVO_SLIDER_EFFECT') == 'boxRainGrowReverse' ? 'selected="selected"' : '' ). '>boxRainGrowReverse</option>';
-    $output .= '        </select>';
-    $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l('Specify your effect') . '</em>';
-    $output .= '      </p>';
-    $output .= '      <p>';
-    $output .= '        <label for="showcase_nivo_slider_slices">' . $this->l('Slices') . '</label>';
-    $output .= '        <input type="text" name="showcase_nivo_slider_slices" id="showcase_nivo_slider_slices" value="' . Configuration::get('SHOWCASE_NIVO_SLIDER_SLICES') . '" />';
-    $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l('For slice animations') . '</em>';
-    $output .= '      </p>';
-    $output .= '      <p>';
-    $output .= '        <label for="showcase_nivo_slider_box_rows">' . $this->l('Box rows') . '</label>';
-    $output .= '        <input type="text" name="showcase_nivo_slider_box_rows" id="showcase_nivo_slider_box_rows" value="' . Configuration::get('SHOWCASE_NIVO_SLIDER_BOX_ROWS') . '" />';
-    $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l('For box animations') . '</em>';
-    $output .= '      </p>';
-    $output .= '      <p>';
-    $output .= '        <label for="showcase_nivo_slider_box_cols">' . $this->l('Box cols') . '</label>';
-    $output .= '        <input type="text" name="showcase_nivo_slider_box_cols" id="showcase_nivo_slider_box_cols" value="' . Configuration::get('SHOWCASE_NIVO_SLIDER_BOX_COLS') . '" />';
-    $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l('For box animations') . '</em>';
-    $output .= '      </p>';
-    $output .= '      <p>';
-    $output .= '        <label for="showcase_nivo_slider_anim_speed">' . $this->l('Animation speed') . '</label>';
-    $output .= '        <input type="text" name="showcase_nivo_slider_anim_speed" id="showcase_nivo_slider_anim_speed" value="' . Configuration::get('SHOWCASE_NIVO_SLIDER_ANIM_SPEED') . '" />';
-    $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l('Slide transition speed') . '</em>';
-    $output .= '      </p>';
-    $output .= '      <p>';
-    $output .= '        <label for="showcase_nivo_slider_pause_time">' . $this->l('Animation time pause') . '</label>';
-    $output .= '        <input type="text" name="showcase_nivo_slider_pause_time" id="showcase_nivo_slider_pause_time" value="' . Configuration::get('SHOWCASE_NIVO_SLIDER_PAUSE_TIME') . '" />';
-    $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l('How long each slide will show') . '</em>';
-    $output .= '      </p>';
-    $output .= '      <p>';
-    $output .= '        <label for="showcase_nivo_slider_start_slide">' . $this->l('Start slide') . '</label>';
-    $output .= '        <input type="text" name="showcase_nivo_slider_start_slide" id="showcase_nivo_slider_start_slide" value="' . Configuration::get('SHOWCASE_NIVO_SLIDER_START_SLIDE') . '" />';
-    $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l('Set starting Slide (0 index)') . '</em>';
-    $output .= '      </p>';
-    $output .= '      <p>';
-    $output .= '        <label for="showcase_nivo_slider_keyboard_nav">' . $this->l('Keyboard navigation') . '</label>';
-    $output .= '        <input type="radio" name="showcase_nivo_slider_keyboard_nav" id="showcase_nivo_slider_keyboard_nav" value="1"' . (Configuration::get('SHOWCASE_NIVO_SLIDER_KEYBD_NAV') == 1 ? 'checked="checked"' : '' ) . ' />';
-    $output .= '        <label for="showcase_thumbs_fadein_yes" class="t"><img src="../img/admin/enabled.gif" alt="' . $this->l('Enabled') . '" title="' . $this->l('Enabled') . '"></label>';
-    $output .= '        <input type="radio" name="showcase_nivo_slider_keyboard_nav" id="showcase_nivo_slider_keyboard_nav" value="0"' . (Configuration::get('SHOWCASE_NIVO_SLIDER_KEYBD_NAV') == 0 ? 'checked="checked"' : '' ) . ' />';
-    $output .= '        <label for="showcase_thumbs_fadein_no" class="t"><img src="../img/admin/disabled.gif" alt="' . $this->l('Disabled') . '" title="' . $this->l('Disabled') . '"></label>';
-    $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l('Use left & right keyboard arrows') . '</em>';
-    $output .= '      </p>';
-    $output .= '      <p>';
-    $output .= '        <label for="showcase_nivo_slider_keyboard_pause_on_over">' . $this->l('Pause on over') . '</label>';
-    $output .= '        <input type="radio" name="showcase_nivo_slider_keyboard_pause_on_over" id="showcase_nivo_slider_keyboard_pause_on_over" value="1"' . (Configuration::get('SHOWCASE_NIVO_SLIDER_PAUSE_OVER') == 1 ? 'checked="checked"' : '' ) . ' />';
-    $output .= '        <label for="showcase_thumbs_fadein_yes" class="t"><img src="../img/admin/enabled.gif" alt="' . $this->l('Enabled') . '" title="' . $this->l('Enabled') . '"></label>';
-    $output .= '        <input type="radio" name="showcase_nivo_slider_keyboard_pause_on_over" id="showcase_nivo_slider_keyboard_pause_on_over" value="0"' . (Configuration::get('SHOWCASE_NIVO_SLIDER_PAUSE_OVER') == 0 ? 'checked="checked"' : '' ) . ' />';
-    $output .= '        <label for="showcase_thumbs_fadein_no" class="t"><img src="../img/admin/disabled.gif" alt="' . $this->l('Disabled') . '" title="' . $this->l('Disabled') . '"></label>';
-    $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l('Stop animation while hovering') . '</em>';
-    $output .= '      </p>';
-    $output .= '    </fieldset>';
+    
+    foreach ($this->_config['defaultsValues'] as $key => $type)
+    {
+      $output .= '    <fieldset style="font-size: 1em; margin-bottom: 1em">';
+      $output .= '      <legend>' . $this->l($key) . '</legend>';
+
+      foreach ($type as $value)
+      {
+        $output .= '      <p>';
+      
+        switch($value['type'])
+        {
+          case 'text':
+            $output .= '        <label for="' . $value['id'] . '">' . $this->l($value['title']) . '</label>';
+            $output .= '        <input type="text" name="' . $value['id'] . '" id="' . $value['id'] . '" value="' . Configuration::get($value['name']) . '" />';
+            break;
+      
+          case 'select':
+            $output .= '        <label for="' . $value['id'] . '">' . $this->l($value['title']) . '</label>';
+            $output .= '        <select name="' . $value['id'] . '" id="' . $value['id'] . '">';
+            foreach ($value['options'] as $option)
+              $output .= '          <option value="' . $option . '" ' . (Configuration::get($value['name']) == $option ? 'selected="selected"' : '') . '>' . $option . '</option>';
+            $output .= '        </select>';
+            break;
+      
+          case 'radio':
+            $output .= '        <label>' . $this->l($value['title']) . '</label>';
+            $output .= '        <input type="radio" name="' . $value['id'] . '" id="' . $value['id'] . '_yes" value="1"' . (Configuration::get($value['name']) == 1 ? 'checked="checked"' : '' ) . ' />';
+            $output .= '        <label for="' . $value['id'] . '_yes" class="t"><img src="../img/admin/enabled.gif" alt="' . $this->l('Enabled') . '" title="' . $this->l('Enabled') . '"></label>';
+            $output .= '        <input type="radio" name="' . $value['id'] . '" id="' . $value['id'] . '_no" value="0"' . (Configuration::get($value['name']) == 0 ? 'checked="checked"' : '' ) . ' />';
+            $output .= '        <label for="' . $value['id'] . '_no" class="t"><img src="../img/admin/disabled.gif" alt="' . $this->l('Disabled') . '" title="' . $this->l('Disabled') . '"></label>';
+            break;
+        }
+      
+        if(isset($value['help']))
+          $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l($value['help']) . '</em>';
+      
+        $output .= '      </p>';
+      }
+      
+      $output .= '    </fieldset>';
+    }
+    
     $output .= '    <p style="text-align: center">';
     $output .= '      <input type="submit" class="button" name="submit_showcase_conf" value="'.$this->l('Validate').'"/>';
     $output .= '    </p>';
@@ -421,29 +499,11 @@ class Showcase extends Module
 		{
 		  echo '<div class="conf confirm"><img src="../img/admin/ok.gif" alt="ok">' . $this->l('Update successful') . '</div>';
 
-		  Configuration::updateValue('SHOWCASE_IMG_NUMBER', Tools::getValue('showcase_image_number'));
-		  Configuration::updateValue('SHOWCASE_IMG_WIDTH', Tools::getValue('showcase_image_width'));
-		  Configuration::updateValue('SHOWCASE_IMG_HEIGHT', Tools::getValue('showcase_image_height'));
-		  Configuration::updateValue('SHOWCASE_USE_IMG_TITLE', Tools::getValue('showcase_image_use_title'));
-		  Configuration::updateValue('SHOWCASE_THBS_DIFFERENT', Tools::getValue('showcase_thumbs_different'));
-		  Configuration::updateValue('SHOWCASE_THBS_WIDTH', Tools::getValue('showcase_thumbs_width'));
-		  Configuration::updateValue('SHOWCASE_THBS_HEIGHT', Tools::getValue('showcase_thumbs_height'));
-		  Configuration::updateValue('SHOWCASE_THBS_ALIGN', Tools::getValue('showcase_thumbs_align'));
-		  Configuration::updateValue('SHOWCASE_THBS_BORDER_COLOR', Tools::getValue('showcase_thumbs_border_color'));
-		  Configuration::updateValue('SHOWCASE_THBS_BORDER_SIZE', Tools::getValue('showcase_thumbs_border_size'));
-		  Configuration::updateValue('SHOWCASE_THBS_FADEIN', Tools::getValue('showcase_thumbs_fadein'));
-		  Configuration::updateValue('SHOWCASE_BTN_BORDER_RADIUS', Tools::getValue('showcase_button_border_radius'));
-		  Configuration::updateValue('SHOWCASE_BTN_COLOR', Tools::getValue('showcase_button_color'));
-		  
-		  Configuration::updateValue('SHOWCASE_NIVO_SLIDER_EFFECT', Tools::getValue('showcase_nivo_slider_effect'));
-		  Configuration::updateValue('SHOWCASE_NIVO_SLIDER_SLICES', Tools::getValue('showcase_nivo_slider_slices'));
-		  Configuration::updateValue('SHOWCASE_NIVO_SLIDER_BOX_ROWS', Tools::getValue('showcase_nivo_slider_box_rows'));
-		  Configuration::updateValue('SHOWCASE_NIVO_SLIDER_BOX_COLS', Tools::getValue('showcase_nivo_slider_box_cols'));
-		  Configuration::updateValue('SHOWCASE_NIVO_SLIDER_ANIM_SPEED', Tools::getValue('showcase_nivo_slider_anim_speed'));
-		  Configuration::updateValue('SHOWCASE_NIVO_SLIDER_PAUSE_TIME', Tools::getValue('showcase_nivo_slider_pause_time'));
-		  Configuration::updateValue('SHOWCASE_NIVO_SLIDER_START_TIME', Tools::getValue('showcase_nivo_slider_start_slide'));
-		  Configuration::updateValue('SHOWCASE_NIVO_SLIDER_KEYBD_NAV', Tools::getValue('showcase_nivo_slider_keyboard_nav'));
-		  Configuration::updateValue('SHOWCASE_NIVO_SLIDER_PAUSE_OVER', Tools::getValue('showcase_nivo_slider_keyboard_pause_on_over'));
+      foreach ($this->_config['defaultsValues'] as $type)
+      {
+        foreach ($type as $value)
+          Configuration::updateValue($value['name'], Tools::getValue($value['id']));
+      }
 	  }
   }
 
@@ -513,10 +573,10 @@ class Showcase extends Module
 	
 	function hookHeader($params)
 	{
-	  Tools::addJS(($this->_path) . 'js/jquery.nivo.slider.pack.js');
+	  Tools::addJS(($this->_path) . 'nivoslider/jquery.nivo.slider.pack.js');
 
-	  Tools::addCSS(($this->_path) . 'css/nivo-slider.css', 'all');
-	  Tools::addCSS(($this->_path) . 'css/showcase.css', 'all');
+	  Tools::addCSS(($this->_path) . 'nivoslider/nivo-slider.css', 'all');
+	  Tools::addCSS(($this->_path) . 'showcase.css', 'all');
 	}
 	
 	function hookHome($params)
@@ -573,6 +633,6 @@ class Showcase extends Module
     $smarty->assign('conf', $conf);
     $smarty->assign('slides', $slides);
       
-		return $this->display(__FILE__, '/tpl/showcase.tpl');
+		return $this->display(__FILE__, 'showcase.tpl');
 	}
 }

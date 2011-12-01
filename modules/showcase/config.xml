@@ -2,7 +2,7 @@
 <module>
 	<name>showcase</name>
 	<displayName><![CDATA[Showcase with Nivo Slider]]></displayName>
-	<version><![CDATA[0.1]]></version>
+	<version><![CDATA[0.2]]></version>
 	<description><![CDATA[A slideshow which use the jQuery framework and Nivo Slider jQuery plugin]]></description>
 	<author><![CDATA[Pierrick CAEN]]></author>
 	<tab><![CDATA[advertising_marketing]]></tab>
