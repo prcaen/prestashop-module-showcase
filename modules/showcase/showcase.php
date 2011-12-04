@@ -32,13 +32,19 @@ class Showcase extends Module
     $this->tab     = 'advertising_marketing';
     $this->version = 0.2;
     $this->author  = 'Pierrick CAEN';
+    
+    $this->_localhost = true;
 
     parent::__construct();
 
     $this->displayName      = $this->l('Showcase with Nivo Slider');
     $this->description      = $this->l('A slideshow which use the jQuery framework and Nivo Slider jQuery plugin');
     
-    $this->_showcase_img_path     = _PS_MODULE_DIR_ . $this->name . '/img/';
+    if($this->_localhost)
+      $this->_showcase_img_path     = 'http://localhost/prestashop-module-showcase/modules/' . $this->name . '/img/';
+    else
+      $this->_showcase_img_path     = _PS_MODULE_DIR_ . $this->name . '/img/';
+
     $this->_showcase_slides_path  = $this->_showcase_img_path . 'slides/';
     $this->_showcase_thumbs_path  = $this->_showcase_img_path . 'thumbs/';
     $this->_showcase_sources_path = $this->_showcase_img_path . 'sources/';
@@ -69,14 +75,6 @@ class Showcase extends Module
             'type'  => 'text',
             'value' => 360,
             'help'  => 'Provide a value in pixel. Ex: 360'
-          ),
-          array(
-            'name'  => 'SHOWCASE_USE_IMG_TITLE',
-            'id'    => 'showcase_image_use_title',
-            'title' => 'Image title and subtitle',
-            'type'  => 'radio',
-            'value' => 1,
-            'help'  => 'Check it if you want to display a title and a subtitle'
           )
         ),
         'Thumbs' => array(
@@ -108,24 +106,20 @@ class Showcase extends Module
             'name'  => 'SHOWCASE_THBS_ALIGN',
             'id'    => 'showcase_thumbs_align',
             'title' => 'Thumbs align',
-            'type'  => 'radio',
+            'type'  => 'radio2',
+            'options' => array(
+              'left',
+              'right'
+            ),
             'value' => 'left'
           ),
           array(
             'name'  => 'SHOWCASE_THBS_BORDER_COLOR',
-            'type'  => 'text',
+            'type'  => 'colorpicker',
             'id'    => 'showcase_thumbs_border_color',
             'title' => 'Choose the active thumb border color',
             'value' => '#95d4dc',
             'help'  => 'Provide a value in hexa. Ex: #FFF'
-          ),
-          array(
-            'name'  => 'SHOWCASE_THBS_BORDER_SIZE',
-            'type'  => 'text',
-            'id'    => 'showcase_thumbs_border_size',
-            'title' => 'Choose the active thumb border size',
-            'value' => 1,
-            'help'  => 'Provide a value in pixel. Ex: 1'
           ),
           array(
             'name'  => 'SHOWCASE_THBS_FADEIN',
@@ -135,22 +129,54 @@ class Showcase extends Module
             'value' => 1
           )
         ),
+        'Text'    => array(
+          array(
+            'name'  => 'SHOWCASE_USE_IMG_TITLE',
+            'id'    => 'showcase_image_use_title',
+            'title' => 'Use image title',
+            'type'  => 'checkbox',
+            'value' => 1,
+            'help'  => 'Check it if you want to display a title'
+          ),
+          array(
+            'name'  => 'SHOWCASE_USE_IMG_SUBTITLE',
+            'id'    => 'showcase_image_use_subtitle',
+            'title' => 'Use image subtitle',
+            'type'  => 'checkbox',
+            'value' => 1,
+            'help'  => 'Check it if you want to display a subtitle'
+          ),
+          array(
+            'name'  => 'SHOWCASE_USE_IMG_DESCRIPTION',
+            'id'    => 'showcase_image_use_description',
+            'title' => 'Use image description',
+            'type'  => 'checkbox',
+            'value' => 0,
+            'help'  => 'Check it if you want to display a description'
+          )
+        ),
         'Buttons' => array(
           array(
+            'name'  => 'SHOWCASE_BTN_COLOR_DIFFERENT',
+            'type'  => 'radio',
+            'id'    => 'showcase_button_color_different',
+            'title' => 'Use a different button color',
+            'value' => 1
+          ),
+          array(
             'name'  => 'SHOWCASE_BTN_COLOR',
-            'type'  => 'text',
+            'type'  => 'colorpicker',
             'id'    => 'showcase_button_color',
             'title' => 'Button color',
             'value' => '#e15b49',
             'help'  => 'Provide a value in hexa. Ex: #000'
           ),
           array(
-            'name'  => 'SHOWCASE_BTN_BORDER_RADIUS',
-            'type'  => 'text',
-            'id'    => 'showcase_button_border_radius',
-            'title' => 'Button border radius',
-            'value' => 3,
-            'help'  => 'Provide a value in pixel. Ex: 3'
+            'name'  => 'SHOWCASE_BTN_TEXT_DIFFERENT',
+            'type'  => 'radio',
+            'id'    => 'showcase_button_text_different',
+            'title' => 'Use a different button text',
+            'value' => 1
           )
         ),
         'Nivo Slider' => array(
@@ -278,9 +304,9 @@ class Showcase extends Module
 	  {
       foreach ($this->_config['defaultsMedia'] as $media => $value)
       {
-        if($key == 'SHOWCASE_IMG_SLIDE_')
+        if($media == 'SHOWCASE_IMG_SLIDE_')
         {
-          if(!Configuration::updateValue($media . $i, $value . $i))
+          if(!Configuration::updateValue($media . $i, $value . $i . '.jpg'))
             return false;
         }
         else
@@ -327,7 +353,24 @@ class Showcase extends Module
 	 */
   public function getContent()
   {
-    $output = '';
+    $output = '<script type="text/javascript">
+    $(document).ready(function() {
+      if($("input[name=showcase_button_color_different]").val() == 0)
+         $("#color_showcase_button_color").parent().show();
+      else
+         $("#color_showcase_button_color").parent().hide();
+
+       $("input[name=\'showcase_button_color_different\']").change(function()
+       {
+         if($(this).val() == 0)
+           $("#color_showcase_button_color").parent().show();
+         else
+           $("#color_showcase_button_color").parent().hide();
+       }); 
+    });
+    </script>';
+    
+    $output .= '<script type="text/javascript" src="/prestashop-module-showcase/js/jquery/jquery-colorpicker.js"></script>';
     $this->postProcess();
 
     $output .= '<form action="' . Tools::safeOutput($_SERVER['REQUEST_URI']) . '" method="post" enctype="multipart/form-data">';
@@ -335,15 +378,23 @@ class Showcase extends Module
     $output .= '    <legend>' . $this->l('Showcase images') . '</legend>';
     for($i = 1; $i <= Configuration::get('SHOWCASE_IMG_NUMBER'); $i++)
     {
+      $output .= '    <fieldset style="font-size: 1em; margin-bottom: 1em">';
+      $output .= '    <legend>' . $this->l('Image') . ' ' . $i . '</legend>';
+      $output .= '    <p style="float:right; text-align:center">';
+      $output .= '    <strong>' . $this->l('Slide') . '</strong><br />';
+      $output .= '      <img src="' . $this->_showcase_slides_path . Configuration::get('SHOWCASE_IMG_SLIDE_' . $i) .'" alt="" width="400" /><br />';
+      $output .= '    <strong>' . $this->l('Thumb') . '</strong><br />';
+      $output .= '      <img src="' . $this->_showcase_thumbs_path . Configuration::get('SHOWCASE_IMG_SLIDE_' . $i) .'" alt="" />';
+      $output .= '    </p>';
       $output .= '    <p>';
-      $output .= '      <label for="showcase_img_' . $i . '">' . $this->l('Image') . ' ' . $i . '</label>';
+      $output .= '      <label for="showcase_img_' . $i . '">' . $this->l('Image') .'</label>';
       $output .= '      <input type="file" name="showcase_img_' . $i . '" id="showcase_img_' . $i . '" />';
       $output .= '    </p>';
 
       if(Configuration::get('SHOWCASE_THBS_DIFFERENT'))
       {
         $output .= '    <p>';
-        $output .= '      <label for="showcase_thumbs_' . $i . '">' . $this->l('Thumb') . ' ' . $i . '</label>';
+        $output .= '      <label for="showcase_thumbs_' . $i . '">' . $this->l('Thumb') . '</label>';
         $output .= '      <input type="file" name="showcase_thumbs_' . $i . '" id="showcase_thumbs_' . $i . '" />';
         $output .= '    </p>';
       }
@@ -351,23 +402,49 @@ class Showcase extends Module
       if(Configuration::get('SHOWCASE_USE_IMG_TITLE'))
       {
         $output .= '    <p>';
-        $output .= '      <label for="showcase_img_title_' . $i . '">' . $this->l('Title') . ' ' . $i . '</label>';
+        $output .= '      <label for="showcase_img_title_' . $i . '">' . $this->l('Title') . '</label>';
         $output .= '      <input type="text" name="showcase_img_title_' . $i . '" id="showcase_img_title_' . $i . '" value="' . Configuration::get('SHOWCASE_IMG_TITLE_' . $i). '" />';
         $output .= '    </p>';
+      }
+
+      if(Configuration::get('SHOWCASE_USE_IMG_SUBTITLE'))
+      {
         $output .= '    <p>';
-        $output .= '      <label for="showcase_img_subtitle_' . $i . '">' . $this->l('Subtitle') . ' ' . $i . '</label>';
+        $output .= '      <label for="showcase_img_subtitle_' . $i . '">' . $this->l('Subtitle') . '</label>';
         $output .= '      <input type="text" name="showcase_img_subtitle_' . $i . '" id="showcase_img_subtitle_' . $i . '" value="' . Configuration::get('SHOWCASE_IMG_SUBTITLE_' . $i). '" />';
         $output .= '    </p>';
       }
+
+      if(Configuration::get('SHOWCASE_USE_IMG_DESCRIPTION'))
+      {
+        $output .= '    <p>';
+        $output .= '      <label for="showcase_img_description_' . $i . '">' . $this->l('Description') . '</label>';
+        $output .= '      <textarea rows="5" cols="45" name="showcase_img_description_' . $i . '" id="showcase_img_description_' . $i . '">' . Configuration::get('SHOWCASE_IMG_DESCRIPTION_' . $i). '</textarea>';
+        $output .= '    </p>';
+      }
       
+      if(Configuration::get('SHOWCASE_BTN_COLOR_DIFFERENT'))
+      {
+        $output .= '    <p>';
+        $output .= '      <label for="color_' . $i . '">' . $this->l('Button color') . '</label>';
+        $output .= '      <input type="text" data-hex="true" class="color mColorPickerInput mColorPicker" name="showcase_button_color_' . $i . '" id="color_' . $i . '" value="' . Configuration::get('SHOWCASE_BTN_COLOR_' . $i). '" />';
+        $output .= '      <span style="cursor:pointer;" id="icp_color_' . $i . '" class="mColorPickerTrigger" data-mcolorpicker="true"><img src="../img/admin/color.png" style="border:0;margin:0 0 0 3px" align="absmiddle"></span>';
+        $output .= '    </p>';
+      }
+
+      if(Configuration::get('SHOWCASE_BTN_TEXT_DIFFERENT'))
+      {
+        $output .= '    <p>';
+        $output .= '      <label for="showcase_img_button_txt_' . $i . '">' . $this->l('Text button') . '</label>';
+        $output .= '      <input type="text" name="showcase_img_button_txt_' . $i . '" id="showcase_img_button_txt_' . $i . '" value="' . Configuration::get('SHOWCASE_IMG_BUTTON_TXT_' . $i). '" />';
+        $output .= '    </p>';
+      }
       $output .= '    <p>';
-      $output .= '      <label for="showcase_img_button_txt_' . $i . '">' . $this->l('Text button') . ' ' . $i . '</label>';
-      $output .= '      <input type="text" name="showcase_img_button_txt_' . $i . '" id="showcase_img_button_txt_' . $i . '" value="' . Configuration::get('SHOWCASE_IMG_BUTTON_TXT_' . $i). '" />';
-      $output .= '    </p>';
-      $output .= '    <p>';
-      $output .= '      <label for="showcase_img_button_link_' . $i . '">' . $this->l('Link button') . ' ' . $i . '</label>';
+      $output .= '      <label for="showcase_img_button_link_' . $i . '">' . $this->l('Link button') . '</label>';
       $output .= '      <input type="text" name="showcase_img_button_link_' . $i . '" id="showcase_img_button_link_' . $i . '" value="' . Configuration::get('SHOWCASE_IMG_BUTTON_LINK_' . $i). '" />';
       $output .= '    </p>';
+      
+      $output .= '  </fieldset>';
     }
 
     $output .= '    <p style="text-align: center">';
@@ -384,7 +461,7 @@ class Showcase extends Module
 
       foreach ($type as $value)
       {
-        $output .= '      <p>';
+        $output .= '      <p style="margin-top:10px     ">';
       
         switch($value['type'])
         {
@@ -408,6 +485,26 @@ class Showcase extends Module
             $output .= '        <input type="radio" name="' . $value['id'] . '" id="' . $value['id'] . '_no" value="0"' . (Configuration::get($value['name']) == 0 ? 'checked="checked"' : '' ) . ' />';
             $output .= '        <label for="' . $value['id'] . '_no" class="t"><img src="../img/admin/disabled.gif" alt="' . $this->l('Disabled') . '" title="' . $this->l('Disabled') . '"></label>';
             break;
+            
+          case 'radio2':
+            $output .= '        <label>' . $this->l($value['title']) . '</label>';
+            foreach ($value['options'] as $option)
+            {
+              $output .= '        <input type="radio" name="' . $value['id'] . '" id="' . $value['id'] . '_' . $option .'" value="' . $option . '"' . (Configuration::get($value['name']) == $option ? 'checked="checked"' : '' ) . ' />';
+              $output .= '        <label for="' . $value['id'] . '_' . $option .'" class="t">'. $this->l($option) .'</label>';
+            }
+            break;
+          
+          case 'checkbox':
+            $output .= '        <label for="' . $value['id'] . '">' . $this->l($value['title']) . '</label>';
+            $output .= '        <input type="checkbox" name="' . $value['id'] . '" id="' . $value['id'] . '" value="1"' . (Configuration::get($value['name']) == 1 ? 'checked="checked"' : '' ) . ' />';
+            break;
+            
+          case 'colorpicker':
+            $output .= '      <label for="color_' . $value['id'] . '">' . $this->l($value['title']) . '</label>';
+            $output .= '      <input type="text" data-hex="true" class="color mColorPickerInput mColorPicker" name="' . $value['id'] . '" id="color_' . $value['id'] . '" value="' . Configuration::get($value['name'] ). '" />';
+            $output .= '      <span style="cursor:pointer;" id="icp_color_' . $value['id'] . '" class="mColorPickerTrigger" data-mcolorpicker="true"><img src="../img/admin/color.png" style="border:0;margin:0 0 0 3px" align="absmiddle"></span>';
+            $output .= '    </p>';
         }
       
         if(isset($value['help']))
@@ -482,10 +579,25 @@ class Showcase extends Module
       if(Configuration::get('SHOWCASE_USE_IMG_TITLE'))
       {
         for($i = 1; $i <= Configuration::get('SHOWCASE_IMG_NUMBER'); $i++)
-        {
           Configuration::updateValue('SHOWCASE_IMG_TITLE_' . $i, Tools::getValue('showcase_img_title_' . $i));
+      }
+
+      if(Configuration::get('SHOWCASE_USE_IMG_SUBTITLE'))
+      {
+        for($i = 1; $i <= Configuration::get('SHOWCASE_IMG_NUMBER'); $i++)
           Configuration::updateValue('SHOWCASE_IMG_SUBTITLE_' . $i, Tools::getValue('showcase_img_subtitle_' . $i));
-        }
+      }
+      
+      if(Configuration::get('SHOWCASE_USE_IMG_DESCRIPTION'))
+      {
+        for($i = 1; $i <= Configuration::get('SHOWCASE_IMG_NUMBER'); $i++)
+          Configuration::updateValue('SHOWCASE_IMG_DESCRIPTION_' . $i, Tools::getValue('showcase_img_description_' . $i));
+      }
+      
+      if(Configuration::get('SHOWCASE_BTN_COLOR_DIFFERENT'))
+      {
+        for($i = 1; $i <= Configuration::get('SHOWCASE_IMG_NUMBER'); $i++)
+          Configuration::updateValue('SHOWCASE_BTN_COLOR_' . $i, Tools::getValue('showcase_button_color_' . $i));
       }
       
       for($i = 1; $i <= Configuration::get('SHOWCASE_IMG_NUMBER'); $i++)
@@ -602,8 +714,6 @@ class Showcase extends Module
       'showcase_thumbs_width'              => Configuration::get('SHOWCASE_THBS_WIDTH') . 'px',
       'showcase_thumbs_height'             => Configuration::get('SHOWCASE_THBS_HEIGHT') . 'px',
       'showcase_thumbs_border_color'       => Configuration::get('SHOWCASE_THBS_BORDER_COLOR'),
-      'showcase_thumbs_border_size'        => Configuration::get('SHOWCASE_THBS_BORDER_SIZE') . 'px',
-      'showcase_button_border_radius'      => Configuration::get('SHOWCASE_BTN_BORDER_RADIUS') . 'px',
       'showcase_button_color'              => Configuration::get('SHOWCASE_BTN_COLOR'),
       'showcase_nivo_slider_effect'        => Configuration::get('SHOWCASE_NIVO_SLIDER_EFFECT'),
       'showcase_nivo_slider_slices'        => Configuration::get('SHOWCASE_NIVO_SLIDER_SLICES'),
