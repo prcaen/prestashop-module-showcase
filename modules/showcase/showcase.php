@@ -51,61 +51,60 @@ class Showcase extends Module
     
     $this->_config = array(
       'defaultsValues' => array(
-        'Images' => array(
+        $this->l('Images') => array(
           array(
             'name'  => 'SHOWCASE_IMG_NUMBER',
             'id'    => 'showcase_image_number',
-            'title' => 'Image number',
+            'title' => $this->l('Image number'),
             'type'  => 'text',
-            'value' => 3,
-            'help'  => ''
+            'value' => 3
           ),
           array(
             'name'  => 'SHOWCASE_IMG_WIDTH',
             'id'    => 'showcase_image_width',
-            'title' => 'Image width',
+            'title' => $this->l('Image width'),
             'type'  => 'text',
             'value' => 1000,
-            'help'  => 'Provide a value in pixel. Ex: 960'
+            'help'  => $this->l('Provide a value in pixel. Ex: 960')
           ),
           array(
             'name'  => 'SHOWCASE_IMG_HEIGHT',
             'id'    => 'showcase_image_height',
-            'title' => 'Image height',
+            'title' => $this->l('Image height'),
             'type'  => 'text',
             'value' => 360,
-            'help'  => 'Provide a value in pixel. Ex: 360'
+            'help'  => $this->l('Provide a value in pixel. Ex: 360')
           )
         ),
-        'Thumbs' => array(
+        $this->l('Thumbs') => array(
           array(
             'name'  => 'SHOWCASE_THBS_DIFFERENT',
             'id'    => 'showcase_thumbs_different',
-            'title' => 'Upload a different thumb ?',
+            'title' => $this->l('Upload a different thumb ?'),
             'type'  => 'radio',
             'value' => 1,
-            'help'  => 'Check it if you want to display a title and a subtitle'
+            'help'  => $this->l('Check it if you want to load different thumb')
           ),
           array(
             'name'  => 'SHOWCASE_THBS_WIDTH',
             'id'    => 'showcase_thumbs_width',
-            'title' => 'Thumbs width',
+            'title' => $this->l('Thumbs width'),
             'type'  => 'text',
             'value' => 133,
-            'help'  => 'Provide a value in pixel. Ex: 260'
+            'help'  =>$this->l( 'Provide a value in pixel. Ex: 260')
           ),
           array(
             'name'  => 'SHOWCASE_THBS_HEIGHT',
             'id'    => 'showcase_thumbs_height',
-            'title' => 'Thumbs height',
+            'title' => $this->l('Thumbs height'),
             'type'  => 'text',
             'value' => 115,
-            'help'  => 'Provide a value in pixel. Ex: 60'
+            'help'  => $this->l('Provide a value in pixel. Ex: 60')
           ),
           array(
             'name'  => 'SHOWCASE_THBS_ALIGN',
             'id'    => 'showcase_thumbs_align',
-            'title' => 'Thumbs align',
+            'title' => $this->l('Thumbs align'),
             'type'  => 'radio2',
             'options' => array(
               'left',
@@ -117,42 +116,42 @@ class Showcase extends Module
             'name'  => 'SHOWCASE_THBS_BORDER_COLOR',
             'type'  => 'colorpicker',
             'id'    => 'showcase_thumbs_border_color',
-            'title' => 'Choose the active thumb border color',
+            'title' => $this->l('Choose the active thumb border color'),
             'value' => '#95d4dc',
-            'help'  => 'Provide a value in hexa. Ex: #FFF'
+            'help'  => $this->l('Provide a value in hexa. Ex: #FFF')
           ),
           array(
             'name'  => 'SHOWCASE_THBS_FADEIN',
             'type'  => 'radio',
             'id'    => 'showcase_thumbs_fadein',
-            'title' => 'FadeIn on active thumb ?',
+            'title' => $this->l('FadeIn on active thumb ?'),
             'value' => 1
           )
         ),
-        'Text'    => array(
+        $this->l('Text') => array(
           array(
             'name'  => 'SHOWCASE_USE_IMG_TITLE',
             'id'    => 'showcase_image_use_title',
-            'title' => 'Use image title',
+            'title' => $this->l('Use image title'),
             'type'  => 'checkbox',
             'value' => 1,
-            'help'  => 'Check it if you want to display a title'
+            'help'  => $this->l( 'Check it if you want to display a title')
           ),
           array(
             'name'  => 'SHOWCASE_USE_IMG_SUBTITLE',
             'id'    => 'showcase_image_use_subtitle',
-            'title' => 'Use image subtitle',
+            'title' => $this->l('Use image subtitle'),
             'type'  => 'checkbox',
             'value' => 1,
-            'help'  => 'Check it if you want to display a subtitle'
+            'help'  => $this->l('Check it if you want to display a subtitle')
           ),
           array(
             'name'  => 'SHOWCASE_USE_IMG_DESCRIPTION',
             'id'    => 'showcase_image_use_description',
-            'title' => 'Use image description',
+            'title' => $this->l('Use image description'),
             'type'  => 'checkbox',
             'value' => 0,
-            'help'  => 'Check it if you want to display a description'
+            'help'  => $this->l('Check it if you want to display a description')
           )
         ),
         'Buttons' => array(
@@ -160,22 +159,22 @@ class Showcase extends Module
             'name'  => 'SHOWCASE_BTN_COLOR_DIFFERENT',
             'type'  => 'radio',
             'id'    => 'showcase_button_color_different',
-            'title' => 'Use a different button color',
+            'title' => $this->l('Use a different button color'),
             'value' => 1
           ),
           array(
             'name'  => 'SHOWCASE_BTN_COLOR',
             'type'  => 'colorpicker',
             'id'    => 'showcase_button_color',
-            'title' => 'Button color',
+            'title' => $this->l('Button color'),
             'value' => '#e15b49',
-            'help'  => 'Provide a value in hexa. Ex: #000'
-          ),
+            'help'  => $this->l('Provide a value in hexa. Ex: #000')
+          ),x
           array(
             'name'  => 'SHOWCASE_BTN_TEXT_DIFFERENT',
             'type'  => 'radio',
             'id'    => 'showcase_button_text_different',
-            'title' => 'Use a different button text',
+            'title' => $this->l('Use a different button text'),
             'value' => 1
           )
         ),
@@ -184,7 +183,7 @@ class Showcase extends Module
             'name'  => 'SHOWCASE_NIVO_SLIDER_EFFECT',
             'type'  => 'select',
             'id'    => 'showcase_nivo_slider_effect',
-            'title' => 'Effect',
+            'title' => $this->l('Effect'),
             'value' => 'fade',
             'options' => array(
               'sliceDown',
@@ -203,72 +202,70 @@ class Showcase extends Module
               'boxRainReverse',
               'boxRainGrow',
               'boxRainGrowReverse'
-            ),
-            'help' => ''
+            )
           ),
           array(
             'name'  => 'SHOWCASE_NIVO_SLIDER_SLICES',
             'id'    => 'showcase_nivo_slider_slices',
-            'title' => 'Slices',
+            'title' => $this->l('Slices'),
             'type'  => 'text',
-            'value' => 15,
-            'help' => ''
+            'value' => 15
           ),
           array(
             'name'  => 'SHOWCASE_NIVO_SLIDER_BOX_COLS',
             'id'    => 'showcase_nivo_slider_box_cols',
-            'title' => 'Box cols',
+            'title' => $this->l('Box cols'),
             'type'  => 'text',
             'value' => 8,
-            'help' => 'For box animations'
+            'help'  => $this->l('For box animations')
           ),
           array(
             'name'  => 'SHOWCASE_NIVO_SLIDER_BOX_ROWS',
             'id'    => 'showcase_nivo_slider_box_rows',
-            'title' => 'Box rows',
+            'title' => $this->l('Box rows'),
             'type'  => 'text',
             'value' => 4,
-            'help' => 'For box animations'
+            'help'  => $this->l('For box animations')
           ),
           array(
             'name'  => 'SHOWCASE_NIVO_SLIDER_ANIM_SPEED',
             'id'    => 'showcase_nivo_slider_anim_speed',
-            'title' => 'Animation speed',
+            'title' => $this->l('Animation speed'),
             'type'  => 'text',
             'value' => 500,
-            'help'  => 'Slide transition speed'
+            'help'  => $this->l('Slide transition speed')
           ),
           array(
             'name'  => 'SHOWCASE_NIVO_SLIDER_PAUSE_TIME',
             'id'    => 'showcase_nivo_slider_pause_time',
-            'title' => 'Animation time pause',
+            'title' => $this->l('Animation time pause'),
             'type'  => 'text',
             'value' => 0,
-            'help'  => 'How long each slide will show'
+            'help'  => $this->l('How long each slide will show')
           ),
           array(
             'name'  => 'SHOWCASE_NIVO_SLIDER_START_SLIDE',
             'id'    => 'showcase_nivo_slider_start_slide',
-            'title' => 'Start slide',
+            'title' => $this->l('Start slide'),
             'type'  => 'text',
             'value' => 0,
-            'help'  => 'Set starting Slide (0 index)'
+            'help'  => $this->l('Set starting Slide (0 index)')
           ),
           array(
             'name'  => 'SHOWCASE_NIVO_SLIDER_PAUSE_OVER',
             'id'    => 'showcase_nivo_slider_keyboard_pause_on_over',
-            'title' => 'Pause on over',
+            'title' => $this->l('Pause on over'),
             'type'  => 'radio',
             'value' => 1,
-            'help'  => 'Stop animation while hovering'
+            'help'  => $this->l('Stop animation while hovering')
           ),
           array(
             'name'  => 'SHOWCASE_NIVO_SLIDER_KEYBD_NAV',
             'id'    => 'showcase_nivo_slider_keyboard_nav',
-            'title' => 'Keyboard navigation',
+            'title' => $this->l('Keyboard navigation'),
             'type'  => 'radio',
             'value' => 1,
-            'help' => 'Use left & right keyboard arrows'
+            'help'  => $this->l('Use left & right keyboard arrows')
           )
         )
       ),
@@ -466,12 +463,12 @@ class Showcase extends Module
         switch($value['type'])
         {
           case 'text':
-            $output .= '        <label for="' . $value['id'] . '">' . $this->l($value['title']) . '</label>';
+            $output .= '        <label for="' . $value['id'] . '">' . $value['title'] . '</label>';
             $output .= '        <input type="text" name="' . $value['id'] . '" id="' . $value['id'] . '" value="' . Configuration::get($value['name']) . '" />';
             break;
       
           case 'select':
-            $output .= '        <label for="' . $value['id'] . '">' . $this->l($value['title']) . '</label>';
+            $output .= '        <label for="' . $value['id'] . '">' . $value['title'] . '</label>';
             $output .= '        <select name="' . $value['id'] . '" id="' . $value['id'] . '">';
             foreach ($value['options'] as $option)
               $output .= '          <option value="' . $option . '" ' . (Configuration::get($value['name']) == $option ? 'selected="selected"' : '') . '>' . $option . '</option>';
@@ -479,7 +476,7 @@ class Showcase extends Module
             break;
       
           case 'radio':
-            $output .= '        <label>' . $this->l($value['title']) . '</label>';
+            $output .= '        <label>' . $value['title'] . '</label>';
             $output .= '        <input type="radio" name="' . $value['id'] . '" id="' . $value['id'] . '_yes" value="1"' . (Configuration::get($value['name']) == 1 ? 'checked="checked"' : '' ) . ' />';
             $output .= '        <label for="' . $value['id'] . '_yes" class="t"><img src="../img/admin/enabled.gif" alt="' . $this->l('Enabled') . '" title="' . $this->l('Enabled') . '"></label>';
             $output .= '        <input type="radio" name="' . $value['id'] . '" id="' . $value['id'] . '_no" value="0"' . (Configuration::get($value['name']) == 0 ? 'checked="checked"' : '' ) . ' />';
@@ -487,7 +484,7 @@ class Showcase extends Module
             break;
             
           case 'radio2':
-            $output .= '        <label>' . $this->l($value['title']) . '</label>';
+            $output .= '        <label>' . $value['title'] . '</label>';
             foreach ($value['options'] as $option)
             {
               $output .= '        <input type="radio" name="' . $value['id'] . '" id="' . $value['id'] . '_' . $option .'" value="' . $option . '"' . (Configuration::get($value['name']) == $option ? 'checked="checked"' : '' ) . ' />';
@@ -496,19 +493,19 @@ class Showcase extends Module
             break;
           
           case 'checkbox':
-            $output .= '        <label for="' . $value['id'] . '">' . $this->l($value['title']) . '</label>';
+            $output .= '        <label for="' . $value['id'] . '">' . $value['title'] . '</label>';
             $output .= '        <input type="checkbox" name="' . $value['id'] . '" id="' . $value['id'] . '" value="1"' . (Configuration::get($value['name']) == 1 ? 'checked="checked"' : '' ) . ' />';
             break;
             
           case 'colorpicker':
-            $output .= '      <label for="color_' . $value['id'] . '">' . $this->l($value['title']) . '</label>';
+            $output .= '      <label for="color_' . $value['id'] . '">' . $value['title'] . '</label>';
             $output .= '      <input type="text" data-hex="true" class="color mColorPickerInput mColorPicker" name="' . $value['id'] . '" id="color_' . $value['id'] . '" value="' . Configuration::get($value['name'] ). '" />';
             $output .= '      <span style="cursor:pointer;" id="icp_color_' . $value['id'] . '" class="mColorPickerTrigger" data-mcolorpicker="true"><img src="../img/admin/color.png" style="border:0;margin:0 0 0 3px" align="absmiddle"></span>';
             $output .= '    </p>';
         }
       
         if(isset($value['help']))
-          $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $this->l($value['help']) . '</em>';
+          $output .= '        <em style="color: #7F7F7F; font-size: 0.85em">' . $value['help'] . '</em>';
       
         $output .= '      </p>';
       }
