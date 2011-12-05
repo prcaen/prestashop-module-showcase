@@ -98,7 +98,7 @@ class Showcase extends Module
             'id'    => 'showcase_thumbs_height',
             'title' => $this->l('Thumbs height'),
             'type'  => 'text',
-            'value' => 115,
+            'value' => 105,
             'help'  => $this->l('Provide a value in pixel. Ex: 60')
           ),
           array(
@@ -152,6 +152,13 @@ class Showcase extends Module
             'type'  => 'checkbox',
             'value' => 0,
             'help'  => $this->l('Check it if you want to display a description')
+          ),
+          array(
+            'name'  => 'SHOWCASE_TEXT_COLOR_DIFFERENT',
+            'type'  => 'radio',
+            'id'    => 'showcase_text_color_different',
+            'title' => $this->l('Use a different text color'),
+            'value' => 1
           )
         ),
         $this->l('Buttons') => array(
@@ -270,11 +277,14 @@ class Showcase extends Module
         )
       ),
       'defaultsMedia' => array(
-        'SHOWCASE_IMG_TITLE_' => 'Lookbook',
-        'SHOWCASE_IMG_SUBTITLE_' => 'PRINTEMPS-ÉTÉ 2011',
-        'SHOWCASE_IMG_SLIDE_' => 'showcase_img_',
-        'SHOWCASE_IMG_BUTTON_TXT_' => 'Accédez au lookbook',
-        'SHOWCASE_IMG_BUTTON_LINK_' => 'http://www.google.fr'
+        'SHOWCASE_IMG_TITLE_'          => 'Lookbook',
+        'SHOWCASE_IMG_SUBTITLE_'       => 'PRINTEMPS-ÉTÉ 2011',
+        'SHOWCASE_IMG_DESCRIPTION_'    => 'Ceci est un texte',
+        'SHOWCASE_IMG_SLIDE_'          => 'showcase_img_',
+        'SHOWCASE_IMG_BUTTON_TXT_'     => 'Accédez au lookbook',
+        'SHOWCASE_IMG_BUTTON_LINK_'    => 'http://www.google.fr',
+        'SHOWCASE_BTN_COLOR_'          => '#e15b49',
+        'SHOWCASE_TXT_COLOR_'          => '#FFF'
       )
     );
   }
@@ -429,6 +439,15 @@ class Showcase extends Module
         $output .= '    </p>';
       }
 
+      if(Configuration::get('SHOWCASE_TEXT_COLOR_DIFFERENT'))
+      {
+        $output .= '    <p>';
+        $output .= '      <label for="color_' . $i . '">' . $this->l('Text color') . '</label>';
+        $output .= '      <input type="text" data-hex="true" class="color mColorPickerInput mColorPicker" name="showcase_txt_color_' . $i . '" id="color_text_' . $i . '" value="' . Configuration::get('SHOWCASE_TXT_COLOR_' . $i). '" />';
+        $output .= '      <span style="cursor:pointer;" id="icp_color_text_' . $i . '" class="mColorPickerTrigger" data-mcolorpicker="true"><img src="../img/admin/color.png" style="border:0;margin:0 0 0 3px" align="absmiddle"></span>';
+        $output .= '    </p>';
+      }
+
       if(Configuration::get('SHOWCASE_BTN_TEXT_DIFFERENT'))
       {
         $output .= '    <p>';
@@ -436,6 +455,7 @@ class Showcase extends Module
         $output .= '      <input type="text" name="showcase_img_button_txt_' . $i . '" id="showcase_img_button_txt_' . $i . '" value="' . Configuration::get('SHOWCASE_IMG_BUTTON_TXT_' . $i). '" />';
         $output .= '    </p>';
       }
+
       $output .= '    <p>';
       $output .= '      <label for="showcase_img_button_link_' . $i . '">' . $this->l('Link button') . '</label>';
       $output .= '      <input type="text" name="showcase_img_button_link_' . $i . '" id="showcase_img_button_link_' . $i . '" value="' . Configuration::get('SHOWCASE_IMG_BUTTON_LINK_' . $i). '" />';
@@ -596,6 +616,12 @@ class Showcase extends Module
           Configuration::updateValue('SHOWCASE_BTN_COLOR_' . $i, Tools::getValue('showcase_button_color_' . $i));
       }
       
+      if(Configuration::get('SHOWCASE_TEXT_COLOR_DIFFERENT'))
+      {
+        for($i = 1; $i <= Configuration::get('SHOWCASE_IMG_NUMBER'); $i++)
+          Configuration::updateValue('SHOWCASE_TXT_COLOR_' . $i, Tools::getValue('showcase_txt_color_' . $i));
+      }
+      
       for($i = 1; $i <= Configuration::get('SHOWCASE_IMG_NUMBER'); $i++)
       {
         Configuration::updateValue('SHOWCASE_IMG_BUTTON_TXT_' . $i, Tools::getValue('showcase_img_button_txt_' . $i));
@@ -695,38 +721,50 @@ class Showcase extends Module
 	  for($i = 1; $i <= Configuration::get('SHOWCASE_IMG_NUMBER'); $i++)
     {
       $slides[$i] = array();
-      $slides[$i]['title']         = Configuration::get('SHOWCASE_IMG_TITLE_' . $i);
-      $slides[$i]['subtitle']      = Configuration::get('SHOWCASE_IMG_SUBTITLE_' . $i);
+      
+      if(Configuration::get('SHOWCASE_USE_IMG_TITLE'))
+        $slides[$i]['title']         = Configuration::get('SHOWCASE_IMG_TITLE_' . $i);
+      
+      if(Configuration::get('SHOWCASE_USE_IMG_SUBTITLE'))
+        $slides[$i]['subtitle']      = Configuration::get('SHOWCASE_IMG_SUBTITLE_' . $i);
+
+      if(Configuration::get('SHOWCASE_USE_IMG_DESCRIPTION'))
+        $slides[$i]['description']   = Configuration::get('SHOWCASE_IMG_DESCRIPTION_' . $i);
+
       $slides[$i]['img']           = Configuration::get('SHOWCASE_IMG_SLIDE_' . $i);
       $slides[$i]['button_text']   = Configuration::get('SHOWCASE_IMG_BUTTON_TXT_' . $i);
       $slides[$i]['button_link']   = Configuration::get('SHOWCASE_IMG_BUTTON_LINK_' . $i);
+
+      if(Configuration::get('SHOWCASE_BTN_COLOR_DIFFERENT'))
+        $slides[$i]['button_color'] = Configuration::get('SHOWCASE_BTN_COLOR_' . $i);
+      
+      if(Configuration::get('SHOWCASE_TEXT_COLOR_DIFFERENT'))
+        $slides[$i]['txt_color']    = Configuration::get('SHOWCASE_TXT_COLOR_' . $i);
     }
     $conf = array(
-      'slides_path'                        => '/modules/showcase/images/slides/',
-      'thumbs_path'                        => '/modules/showcase/images/thumbs/',
+      'slides_path'                        => $this->_showcase_slides_path,
+      'thumbs_path'                        => $this->_showcase_thumbs_path,
       'showcase_img_width'                 => Configuration::get('SHOWCASE_IMG_WIDTH') . 'px',
       'showcase_img_width_access'          => Configuration::get('SHOWCASE_IMG_WIDTH') + 17 . 'px',
       'showcase_img_height'                => Configuration::get('SHOWCASE_IMG_HEIGHT') . 'px',
       'showcase_thumbs_width'              => Configuration::get('SHOWCASE_THBS_WIDTH') . 'px',
       'showcase_thumbs_height'             => Configuration::get('SHOWCASE_THBS_HEIGHT') . 'px',
       'showcase_thumbs_border_color'       => Configuration::get('SHOWCASE_THBS_BORDER_COLOR'),
-      'showcase_button_color'              => Configuration::get('SHOWCASE_BTN_COLOR'),
       'showcase_nivo_slider_effect'        => Configuration::get('SHOWCASE_NIVO_SLIDER_EFFECT'),
       'showcase_nivo_slider_slices'        => Configuration::get('SHOWCASE_NIVO_SLIDER_SLICES'),
       'showcase_nivo_slider_box_rows'      => Configuration::get('SHOWCASE_NIVO_SLIDER_BOX_ROWS'),
       'showcase_nivo_slider_box_cols'      => Configuration::get('SHOWCASE_NIVO_SLIDER_BOX_COLS'),
       'showcase_nivo_slider_anim_speed'    => Configuration::get('SHOWCASE_NIVO_SLIDER_ANIM_SPEED'),
       'showcase_nivo_slider_pause_time'    => Configuration::get('SHOWCASE_NIVO_SLIDER_PAUSE_TIME'),
-      'showcase_nivo_slider_start_time'    => Configuration::get('SHOWCASE_NIVO_SLIDER_START_TIME'),
+      'showcase_nivo_slider_start_slide'   => Configuration::get('SHOWCASE_NIVO_SLIDER_START_SLIDE'),
       'showcase_nivo_slider_keyboard_nav'  => Configuration::get('SHOWCASE_NIVO_SLIDER_KEYBD_NAV'),
       'showcase_nivo_slider_pause_on_over' => Configuration::get('SHOWCASE_NIVO_SLIDER_PAUSE_OVER')
     );
-    if(Configuration::get('SHOWCASE_USE_IMG_TITLE'))
-      $conf['showcase_img_use_title'] = true;
-    else
-      $conf['showcase_img_use_title'] = false;
 
-    if(Configuration::get('SHOWCASE_THBS_ALIGN') == 'left')
+    if(!Configuration::get('SHOWCASE_BTN_COLOR_DIFFERENT'))
+      $conf['showcase_button_color'] = Configuration::get('SHOWCASE_BTN_COLOR');
+
+    if(Configuration::get('SHOWCASE_THBS_ALIGN') == $this->l('left'))
       $conf['showcase_thumbs_align'] = 'nivo-controlNav-left';
     else
       $conf['showcase_thumbs_align'] = 'nivo-controlNav-right';

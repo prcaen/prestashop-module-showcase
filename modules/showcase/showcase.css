@@ -11,5 +11,5 @@
 .nivo-controlNav {position:absolute;top:10px;z-index:12}
 .nivo-controlNav-left {left:10px;}
 .nivo-controlNav-right {right:10px;}
-.nivo-controlNav a.nivo-control {cursor:pointer;display:block;margin-bottom:10px; border: 1px solid rgba(0,0,0,0); width:133px; height:105px}
+.nivo-controlNav a.nivo-control {cursor:pointer;display:block;margin-bottom:10px; border: 1px solid rgba(0,0,0,0); width:133px; height:105px; background-color: #000}
 .nivo-controlNav a.active {border:1px #95d4dc solid;}

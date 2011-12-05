@@ -1,4 +1,4 @@
-  <!-- Showcase -->
+  <!-- MODULE Showcase -->
   <style type="text/css" media="screen">
     #showcase-wrap {
       width: {$conf.showcase_img_width_access};
@@ -14,10 +14,11 @@
     .nivo-html-caption, .nivo-caption {
       height:{$conf.showcase_img_height}
     }
+    {if $conf.showcase_button_color}
     .nivo-html-caption p a, .nivo-caption p a {
-      background-color:{$conf.showcase_button_color};
-      border-radius:{$conf.showcase_button_border_radius};
+      background-color: {$conf.showcase_button_color};
     }
+    {/if}
     .nivo-controlNav a.nivo-control {
       width: {$conf.showcase_thumbs_width};
       height: {$conf.showcase_thumbs_height}
@@ -28,25 +29,19 @@
     }
     {/if}
     .nivo-controlNav a.active {
-      border: {$conf.showcase_thumbs_border_size} {$conf.showcase_thumbs_border_color} solid;
+      border-color: {$conf.showcase_thumbs_border_color};
     }
     {if $conf.showcase_thumbs_fadeIn}
     .nivo-controlNav a.active img {
       opacity: 1;
     }
     {/if}
-    {if $conf.showcase_img_use_title == false}
-    .nivo-html-caption p strong, .nivo-html-caption p em, .nivo-caption p strong, .nivo-caption p em {
-      display: none;
-    }
-    {/if}
-   
   </style>
   <script type="text/javascript" charset="utf-8">  
     $(document).ready(function() {
       /* Disable accessibility without JS */
       $('#showcase-wrap').css({
-        'overflow' : 'hidden','width' : '1000px'
+        'overflow' : 'hidden','width' : '{$conf.showcase_img_width}'
       });
       $('#showcase img').css('position', 'absolute');
       $('.nivo-html-caption').hide();
@@ -59,7 +54,7 @@
         boxRows: {$conf.showcase_nivo_slider_box_rows},
         animSpeed: {$conf.showcase_nivo_slider_anim_speed},
         pauseTime: {$conf.showcase_nivo_slider_pause_time},
-        startSlide: {$conf.showcase_nivo_slider_start_time},
+        startSlide: {$conf.showcase_nivo_slider_start_slide},
         directionNav: false,
         directionNavHide: true,
         controlNav: true,
@@ -86,12 +81,13 @@
     {foreach from=$slides item=slide name=infoLoop}
     <div id="info-{$smarty.foreach.infoLoop.index}" class="nivo-html-caption">
       <div class="inner-caption">
-        <strong>{$slide.title}</strong><br />
-        <em>{$slide.subtitle}</em><br />
-        <a href="{$slide.button_link}">{$slide.button_text}</a>
+        {if $slide.title}<strong {if $slide.txt_color}style="color: {$slide.txt_color}"{/if}>{$slide.title}</strong><br />{/if}
+        {if $slide.subtitle}<em {if $slide.txt_color}style="color: {$slide.txt_color}"{/if}>{$slide.subtitle}</em><br />{/if}
+        {if $slide.description}<p {if $slide.txt_color}style="color: {$slide.txt_color}"{/if}>{$slide.description}</p>{/if}
+        <a href="{$slide.button_link}" {if $slide.button_color}style="background-color: {$slide.button_color}"{/if}>{if $slide.button_text} {$slide.button_text} {else} {l s='Access' mod='showcase'} {/if}</a>
       </div>
     </div>
     {/foreach}
   </div>
 </div>
-  <!-- /Showcase -->
+  <!-- /MODULE Showcase -->
