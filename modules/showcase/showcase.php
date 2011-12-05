@@ -107,8 +107,8 @@ class Showcase extends Module
             'title' => $this->l('Thumbs align'),
             'type'  => 'radio2',
             'options' => array(
-              'left',
-              'right'
+              $this->l('left'),
+              $this->l('right')
             ),
             'value' => 'left'
           ),
@@ -154,7 +154,7 @@ class Showcase extends Module
             'help'  => $this->l('Check it if you want to display a description')
           )
         ),
-        'Buttons' => array(
+        $this->l('Buttons') => array(
           array(
             'name'  => 'SHOWCASE_BTN_COLOR_DIFFERENT',
             'type'  => 'radio',
@@ -488,7 +488,7 @@ class Showcase extends Module
             foreach ($value['options'] as $option)
             {
               $output .= '        <input type="radio" name="' . $value['id'] . '" id="' . $value['id'] . '_' . $option .'" value="' . $option . '"' . (Configuration::get($value['name']) == $option ? 'checked="checked"' : '' ) . ' />';
-              $output .= '        <label for="' . $value['id'] . '_' . $option .'" class="t">'. $this->l($option) .'</label>';
+              $output .= '        <label for="' . $value['id'] . '_' . $option .'" class="t">'. $option .'</label>';
             }
             break;
           
