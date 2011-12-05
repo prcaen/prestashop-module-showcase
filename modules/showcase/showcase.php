@@ -91,7 +91,7 @@ class Showcase extends Module
             'title' => $this->l('Thumbs width'),
             'type'  => 'text',
             'value' => 133,
-            'help'  =>$this->l( 'Provide a value in pixel. Ex: 260')
+            'help'  =>$this->l('Provide a value in pixel. Ex: 260')
           ),
           array(
             'name'  => 'SHOWCASE_THBS_HEIGHT',
@@ -135,7 +135,7 @@ class Showcase extends Module
             'title' => $this->l('Use image title'),
             'type'  => 'checkbox',
             'value' => 1,
-            'help'  => $this->l( 'Check it if you want to display a title')
+            'help'  => $this->l('Check it if you want to display a title')
           ),
           array(
             'name'  => 'SHOWCASE_USE_IMG_SUBTITLE',
@@ -169,7 +169,7 @@ class Showcase extends Module
             'title' => $this->l('Button color'),
             'value' => '#e15b49',
             'help'  => $this->l('Provide a value in hexa. Ex: #000')
-          ),x
+          ),
           array(
             'name'  => 'SHOWCASE_BTN_TEXT_DIFFERENT',
             'type'  => 'radio',
@@ -458,7 +458,7 @@ class Showcase extends Module
 
       foreach ($type as $value)
       {
-        $output .= '      <p style="margin-top:10px     ">';
+        $output .= '      <p style="margin-top:15px     ">';
       
         switch($value['type'])
         {
@@ -501,7 +501,6 @@ class Showcase extends Module
             $output .= '      <label for="color_' . $value['id'] . '">' . $value['title'] . '</label>';
             $output .= '      <input type="text" data-hex="true" class="color mColorPickerInput mColorPicker" name="' . $value['id'] . '" id="color_' . $value['id'] . '" value="' . Configuration::get($value['name'] ). '" />';
             $output .= '      <span style="cursor:pointer;" id="icp_color_' . $value['id'] . '" class="mColorPickerTrigger" data-mcolorpicker="true"><img src="../img/admin/color.png" style="border:0;margin:0 0 0 3px" align="absmiddle"></span>';
-            $output .= '    </p>';
         }
       
         if(isset($value['help']))
