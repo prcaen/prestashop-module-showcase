@@ -247,7 +247,7 @@ class Showcase extends Module
             'id'    => 'showcase_nivo_slider_pause_time',
             'title' => $this->l('Animation time pause'),
             'type'  => 'text',
-            'value' => 0,
+            'value' => 6000,
             'help'  => $this->l('How long each slide will show')
           ),
           array(

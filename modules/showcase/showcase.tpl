@@ -14,7 +14,7 @@
     .nivo-html-caption, .nivo-caption {
       height:{$conf.showcase_img_height}
     }
-    {if $conf.showcase_button_color}
+    {if isset($conf.showcase_button_color)}
     .nivo-html-caption p a, .nivo-caption p a {
       background-color: {$conf.showcase_button_color};
     }
@@ -81,9 +81,9 @@
     {foreach from=$slides item=slide name=infoLoop}
     <div id="info-{$smarty.foreach.infoLoop.index}" class="nivo-html-caption">
       <div class="inner-caption">
-        {if $slide.title}<strong {if $slide.txt_color}style="color: {$slide.txt_color}"{/if}>{$slide.title}</strong><br />{/if}
-        {if $slide.subtitle}<em {if $slide.txt_color}style="color: {$slide.txt_color}"{/if}>{$slide.subtitle}</em><br />{/if}
-        {if $slide.description}<p {if $slide.txt_color}style="color: {$slide.txt_color}"{/if}>{$slide.description}</p>{/if}
+        {if isset($slide.title)}<strong {if $slide.txt_color}style="color: {$slide.txt_color}"{/if}>{$slide.title}</strong><br />{/if}
+        {if isset($slide.subtitle)}<em {if $slide.txt_color}style="color: {$slide.txt_color}"{/if}>{$slide.subtitle}</em><br />{/if}
+        {if isset($slide.description)}<p {if $slide.txt_color}style="color: {$slide.txt_color}"{/if}>{$slide.description}</p>{/if}
         <a href="{$slide.button_link}" {if $slide.button_color}style="background-color: {$slide.button_color}"{/if}>{if $slide.button_text} {$slide.button_text} {else} {l s='Access' mod='showcase'} {/if}</a>
       </div>
     </div>
