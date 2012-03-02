@@ -37,13 +37,13 @@ class Showcase extends Module
 
     $this->displayName      = $this->l('Showcase with Nivo Slider');
     $this->description      = $this->l('A slideshow which use the jQuery framework and Nivo Slider jQuery plugin');
-    
-    $this->_showcase_img_path     = _PS_MODULE_DIR_ . $this->name . '/images/';
+
+    $this->_showcase_img_path     = _PS_IMG_DIR_ . $this->name . '/';
     $this->_showcase_slides_path  = $this->_showcase_img_path . 'slides/';
     $this->_showcase_thumbs_path  = $this->_showcase_img_path . 'thumbs/';
     $this->_showcase_sources_path = $this->_showcase_img_path . 'sources/';
   }
-  
+
   public function install()
   {
   	if (   !parent::install()
@@ -53,6 +53,7 @@ class Showcase extends Module
   		  || !Configuration::updateValue('SHOWCASE_IMG_WIDTH', 1000)
   		  || !Configuration::updateValue('SHOWCASE_IMG_HEIGHT', 360)
   		  || !Configuration::updateValue('SHOWCASE_USE_IMG_TITLE', 1)
+        || !Configuration::updateValue('SHOWCASE_THBS_ENABLE', 1)
   		  || !Configuration::updateValue('SHOWCASE_THBS_DIFFERENT', 1)
   		  || !Configuration::updateValue('SHOWCASE_THBS_WIDTH', 133)
   		  || !Configuration::updateValue('SHOWCASE_THBS_HEIGHT', 115)
@@ -89,7 +90,7 @@ class Showcase extends Module
   		return false;
   	return true;
   }
-  
+
   public function uninstall()
   {
     if (   !parent::uninstall()
@@ -97,6 +98,7 @@ class Showcase extends Module
   		  || !Configuration::deleteByName('SHOWCASE_IMG_WIDTH')
   		  || !Configuration::deleteByName('SHOWCASE_IMG_HEIGHT')
   		  || !Configuration::deleteByName('SHOWCASE_USE_IMG_TITLE')
+        || !Configuration::deleteByName('SHOWCASE_THBS_ENABLE')
   		  || !Configuration::deleteByName('SHOWCASE_THBS_DIFFERENT')
   		  || !Configuration::deleteByName('SHOWCASE_THBS_WIDTH')
   		  || !Configuration::deleteByName('SHOWCASE_THBS_HEIGHT')
@@ -132,10 +134,10 @@ class Showcase extends Module
   		  || !Configuration::deleteByName('SHOWCASE_NIVO_SLIDER_KEYBD_NAV'))
   		return false;
   }
-  
+
   /**
 	 * getContent used to display admin module form
-	 * 
+	 *
 	 * @return void
 	 */
   public function getContent()
@@ -153,7 +155,7 @@ class Showcase extends Module
       $output .= '      <input type="file" name="showcase_img_' . $i . '" id="showcase_img_' . $i . '" />';
       $output .= '    </p>';
 
-      if(Configuration::get('SHOWCASE_THBS_DIFFERENT'))
+      if(Configuration::get('SHOWCASE_THBS_DIFFERENT') && Configuration::get('SHOWCASE_THBS_ENABLE'))
       {
         $output .= '    <p>';
         $output .= '      <label for="showcase_thumbs_' . $i . '">' . $this->l('Thumb') . ' ' . $i . '</label>';
@@ -172,7 +174,7 @@ class Showcase extends Module
         $output .= '      <input type="text" name="showcase_img_subtitle_' . $i . '" id="showcase_img_subtitle_' . $i . '" value="' . Configuration::get('SHOWCASE_IMG_SUBTITLE_' . $i). '" />';
         $output .= '    </p>';
       }
-      
+
       $output .= '    <p>';
       $output .= '      <label for="showcase_img_button_txt_' . $i . '">' . $this->l('Text button') . ' ' . $i . '</label>';
       $output .= '      <input type="text" name="showcase_img_button_txt_' . $i . '" id="showcase_img_button_txt_' . $i . '" value="' . Configuration::get('SHOWCASE_IMG_BUTTON_TXT_' . $i). '" />';
@@ -215,6 +217,13 @@ class Showcase extends Module
     $output .= '    </fieldset>';
     $output .= '    <fieldset style="font-size: 1em; margin-bottom: 1em">';
     $output .= '      <legend>' . $this->l('Thumbs') . '</legend>';
+    $output .= '      <p>';
+    $output .= '        <label style="width: 201px">' . $this->l('Use thumbs ?') . '</label>';
+    $output .= '        <input type="radio" name="showcase_thumbs_enable" id="showcase_thumbs_enable_yes" value="1"' . (Configuration::get('SHOWCASE_THBS_ENABLE') == 1 ? 'checked="checked"' : '' ) . ' />';
+    $output .= '        <label for="showcase_thumbs_enable_yes" class="t"><img src="../img/admin/enabled.gif" alt="' . $this->l('Enabled') . '" title="' . $this->l('Enabled') . '"></label>';
+    $output .= '        <input type="radio" name="showcase_thumbs_enable" id="showcase_thumbs_enable_no" value="0"' . (Configuration::get('SHOWCASE_THBS_ENABLE') == 0 ? 'checked="checked"' : '' ) . ' />';
+    $output .= '        <label for="showcase_thumbs_enable_no" class="t"><img src="../img/admin/disabled.gif" alt="' . $this->l('Disabled') . '" title="' . $this->l('Disabled') . '"></label>';
+    $output .= '      </p>';
     $output .= '      <p>';
     $output .= '        <label style="width: 201px">' . $this->l('Upload a different thumb ?') . '</label>';
     $output .= '        <input type="radio" name="showcase_thumbs_different" id="showcase_thumbs_different_yes" value="1"' . (Configuration::get('SHOWCASE_THBS_DIFFERENT') == 1 ? 'checked="checked"' : '' ) . ' />';
@@ -346,10 +355,10 @@ class Showcase extends Module
     $output .= '    </p>';
     $output .= '  </fieldset>';
     $output .= '</form>';
-    
+
     return $output;
   }
-  
+
   /**
 	 * postProcess update configuration
 	 * @return void
@@ -363,25 +372,25 @@ class Showcase extends Module
 		  for($i = 1; $i <= Configuration::get('SHOWCASE_IMG_NUMBER'); $i++)
       {
         $imgName = $this->showcase_img_name . $i;
-        
+
         if (isset($_FILES['showcase_img_' . $i]) AND isset($_FILES['showcase_img_' . $i]['tmp_name']) AND !empty($_FILES['showcase_img_' . $i]['tmp_name']))
   			{
   			  if ($error = checkImage($_FILES['showcase_img_' . $i], Tools::convertBytes(ini_get('upload_max_filesize'))))
   					$errors .= $error;
   				else
-  				{ 
+  				{
             // Create thumb
   					if(!Configuration::get('SHOWCASE_THBS_DIFFERENT') OR (empty($_FILES['showcase_thumbs_' . $i]['tmp_name'])))
   					  $this->_createThumb($_FILES['showcase_img_' . $i], $imgName, true);
 
   					// Create slide
   					$this->_createSlide($_FILES['showcase_img_' . $i], $imgName, $i, true);
-  					
+
   					// Copy the source file
   				  $this->_createSource($_FILES['showcase_img_' . $i], $imgName);
 				  }
 			  }
-			  
+
 			  if (isset($_FILES['showcase_thumbs_' . $i]) AND isset($_FILES['showcase_thumbs_' . $i]['tmp_name']) AND !empty($_FILES['showcase_thumbs_' . $i]['tmp_name']))
   			{
   			  if ($error = checkImage($_FILES['showcase_thumbs_' . $i], Tools::convertBytes(ini_get('upload_max_filesize'))))
@@ -390,7 +399,7 @@ class Showcase extends Module
   				{
   					// Create thumb
   					$this->_createThumb($_FILES['showcase_thumbs_' . $i], $imgName, true);
-  					
+
   					// Copy the source file
   					$imgNameThumb = $imgName . '_thumbs';
   				  $this->_createSource($_FILES['showcase_thumbs_' . $i], $imgNameThumb);
@@ -400,7 +409,7 @@ class Showcase extends Module
 			  if ($errors)
     			echo $this->displayError($errors);
       }
-      
+
       if(Configuration::get('SHOWCASE_USE_IMG_TITLE'))
       {
         for($i = 1; $i <= Configuration::get('SHOWCASE_IMG_NUMBER'); $i++)
@@ -409,7 +418,7 @@ class Showcase extends Module
           Configuration::updateValue('SHOWCASE_IMG_SUBTITLE_' . $i, Tools::getValue('showcase_img_subtitle_' . $i));
         }
       }
-      
+
       for($i = 1; $i <= Configuration::get('SHOWCASE_IMG_NUMBER'); $i++)
       {
         Configuration::updateValue('SHOWCASE_IMG_BUTTON_TXT_' . $i, Tools::getValue('showcase_img_button_txt_' . $i));
@@ -425,6 +434,7 @@ class Showcase extends Module
 		  Configuration::updateValue('SHOWCASE_IMG_WIDTH', Tools::getValue('showcase_image_width'));
 		  Configuration::updateValue('SHOWCASE_IMG_HEIGHT', Tools::getValue('showcase_image_height'));
 		  Configuration::updateValue('SHOWCASE_USE_IMG_TITLE', Tools::getValue('showcase_image_use_title'));
+      Configuration::updateValue('SHOWCASE_THBS_ENABLE', Tools::getValue('showcase_thumbs_enable'));
 		  Configuration::updateValue('SHOWCASE_THBS_DIFFERENT', Tools::getValue('showcase_thumbs_different'));
 		  Configuration::updateValue('SHOWCASE_THBS_WIDTH', Tools::getValue('showcase_thumbs_width'));
 		  Configuration::updateValue('SHOWCASE_THBS_HEIGHT', Tools::getValue('showcase_thumbs_height'));
@@ -434,7 +444,7 @@ class Showcase extends Module
 		  Configuration::updateValue('SHOWCASE_THBS_FADEIN', Tools::getValue('showcase_thumbs_fadein'));
 		  Configuration::updateValue('SHOWCASE_BTN_BORDER_RADIUS', Tools::getValue('showcase_button_border_radius'));
 		  Configuration::updateValue('SHOWCASE_BTN_COLOR', Tools::getValue('showcase_button_color'));
-		  
+
 		  Configuration::updateValue('SHOWCASE_NIVO_SLIDER_EFFECT', Tools::getValue('showcase_nivo_slider_effect'));
 		  Configuration::updateValue('SHOWCASE_NIVO_SLIDER_SLICES', Tools::getValue('showcase_nivo_slider_slices'));
 		  Configuration::updateValue('SHOWCASE_NIVO_SLIDER_BOX_ROWS', Tools::getValue('showcase_nivo_slider_box_rows'));
@@ -460,16 +470,16 @@ class Showcase extends Module
 	  $width  = Configuration::get('SHOWCASE_THBS_WIDTH');
 	  $height = Configuration::get('SHOWCASE_THBS_HEIGHT');
     $thumb  = PhpThumbFactory::create($file);
-    
+
     $fileName = $this->_showcase_thumbs_path . $name . $ext;
-    
+
     $this->_deleteOldImage($fileName);
-    
+
     if($crop)
       $thumb->cropFromCenter($width, $height);
     else
       $thumb->resize($width, $height);
-      
+
     $thumb->save($fileName);
 	}
 
@@ -482,7 +492,7 @@ class Showcase extends Module
     $thumb  = PhpThumbFactory::create($file);
 
     $fileName = $this->_showcase_slides_path . $name . $ext;
-    
+
     $this->_deleteOldImage($fileName);
 
     if($crop)
@@ -500,9 +510,9 @@ class Showcase extends Module
 	  $ext    = $this->_getExtension($file);
 	  $file   = $file['tmp_name'];
 	  $thumb  = PhpThumbFactory::create($file);
-	  
+
 	  $fileName = $this->_showcase_sources_path . $name . $ext;
-	  
+
 	  $thumb->save($fileName);
 	}
 
@@ -510,35 +520,22 @@ class Showcase extends Module
 	{
 	  return strrchr($file['name'], '.');
 	}
-	
+
 	function hookHeader($params)
 	{
+    global $smarty;
+
 	  Tools::addJS(($this->_path) . 'js/jquery.nivo.slider.pack.js');
 
 	  Tools::addCSS(($this->_path) . 'css/nivo-slider.css', 'all');
-	  Tools::addCSS(($this->_path) . 'css/showcase.css', 'all');
-	}
-	
-	function hookHome($params)
-	{
-	  global $smarty;
-	  
-	  $slides = array();
-	  for($i = 1; $i <= Configuration::get('SHOWCASE_IMG_NUMBER'); $i++)
-    {
-      $slides[$i] = array();
-      $slides[$i]['title']         = Configuration::get('SHOWCASE_IMG_TITLE_' . $i);
-      $slides[$i]['subtitle']      = Configuration::get('SHOWCASE_IMG_SUBTITLE_' . $i);
-      $slides[$i]['img']           = Configuration::get('SHOWCASE_IMG_SLIDE_' . $i);
-      $slides[$i]['button_text']   = Configuration::get('SHOWCASE_IMG_BUTTON_TXT_' . $i);
-      $slides[$i]['button_link']   = Configuration::get('SHOWCASE_IMG_BUTTON_LINK_' . $i);
-    }
+
     $conf = array(
-      'slides_path'                        => '/modules/showcase/images/slides/',
-      'thumbs_path'                        => '/modules/showcase/images/thumbs/',
+      'slides_path'                        => _PS_IMG_ . 'showcase/slides/',
+      'thumbs_path'                        => _PS_IMG_ . 'showcase/thumbs/',
       'showcase_img_width'                 => Configuration::get('SHOWCASE_IMG_WIDTH') . 'px',
       'showcase_img_width_access'          => Configuration::get('SHOWCASE_IMG_WIDTH') + 17 . 'px',
       'showcase_img_height'                => Configuration::get('SHOWCASE_IMG_HEIGHT') . 'px',
+      'showcase_thumbs_enable'             => Configuration::get('SHOWCASE_THBS_ENABLE'),
       'showcase_thumbs_width'              => Configuration::get('SHOWCASE_THBS_WIDTH') . 'px',
       'showcase_thumbs_height'             => Configuration::get('SHOWCASE_THBS_HEIGHT') . 'px',
       'showcase_thumbs_border_color'       => Configuration::get('SHOWCASE_THBS_BORDER_COLOR'),
@@ -564,15 +561,72 @@ class Showcase extends Module
       $conf['showcase_thumbs_align'] = 'nivo-controlNav-left';
     else
       $conf['showcase_thumbs_align'] = 'nivo-controlNav-right';
-    
+
     if(Configuration::get('SHOWCASE_THBS_FADEIN'))
       $conf['showcase_thumbs_fadeIn'] = true;
     else
       $conf['showcase_thumbs_fadeIn'] = false;
-      
+
+    $smarty->assign('conf', $conf);
+
+    return $this->display(__FILE__, '/tpl/showcase_header.tpl');
+	}
+
+	function hookHome($params)
+	{
+	  global $smarty;
+
+	  $slides = array();
+	  for($i = 1; $i <= Configuration::get('SHOWCASE_IMG_NUMBER'); $i++)
+    {
+      $slides[$i] = array();
+      $slides[$i]['title']         = Configuration::get('SHOWCASE_IMG_TITLE_' . $i);
+      $slides[$i]['subtitle']      = Configuration::get('SHOWCASE_IMG_SUBTITLE_' . $i);
+      $slides[$i]['img']           = Configuration::get('SHOWCASE_IMG_SLIDE_' . $i);
+      $slides[$i]['button_text']   = Configuration::get('SHOWCASE_IMG_BUTTON_TXT_' . $i);
+      $slides[$i]['button_link']   = Configuration::get('SHOWCASE_IMG_BUTTON_LINK_' . $i);
+    }
+    $conf = array(
+      'slides_path'                        => _PS_IMG_ . 'showcase/slides/',
+      'thumbs_path'                        => _PS_IMG_ . 'showcase/thumbs/',
+      'showcase_img_width'                 => Configuration::get('SHOWCASE_IMG_WIDTH') . 'px',
+      'showcase_img_width_access'          => Configuration::get('SHOWCASE_IMG_WIDTH') + 17 . 'px',
+      'showcase_img_height'                => Configuration::get('SHOWCASE_IMG_HEIGHT') . 'px',
+      'showcase_thumbs_enable'             => Configuration::get('SHOWCASE_THBS_ENABLE'),
+      'showcase_thumbs_width'              => Configuration::get('SHOWCASE_THBS_WIDTH') . 'px',
+      'showcase_thumbs_height'             => Configuration::get('SHOWCASE_THBS_HEIGHT') . 'px',
+      'showcase_thumbs_border_color'       => Configuration::get('SHOWCASE_THBS_BORDER_COLOR'),
+      'showcase_thumbs_border_size'        => Configuration::get('SHOWCASE_THBS_BORDER_SIZE') . 'px',
+      'showcase_button_border_radius'      => Configuration::get('SHOWCASE_BTN_BORDER_RADIUS') . 'px',
+      'showcase_button_color'              => Configuration::get('SHOWCASE_BTN_COLOR'),
+      'showcase_nivo_slider_effect'        => Configuration::get('SHOWCASE_NIVO_SLIDER_EFFECT'),
+      'showcase_nivo_slider_slices'        => Configuration::get('SHOWCASE_NIVO_SLIDER_SLICES'),
+      'showcase_nivo_slider_box_rows'      => Configuration::get('SHOWCASE_NIVO_SLIDER_BOX_ROWS'),
+      'showcase_nivo_slider_box_cols'      => Configuration::get('SHOWCASE_NIVO_SLIDER_BOX_COLS'),
+      'showcase_nivo_slider_anim_speed'    => Configuration::get('SHOWCASE_NIVO_SLIDER_ANIM_SPEED'),
+      'showcase_nivo_slider_pause_time'    => Configuration::get('SHOWCASE_NIVO_SLIDER_PAUSE_TIME'),
+      'showcase_nivo_slider_start_time'    => Configuration::get('SHOWCASE_NIVO_SLIDER_START_TIME'),
+      'showcase_nivo_slider_keyboard_nav'  => Configuration::get('SHOWCASE_NIVO_SLIDER_KEYBD_NAV'),
+      'showcase_nivo_slider_pause_on_over' => Configuration::get('SHOWCASE_NIVO_SLIDER_PAUSE_OVER')
+    );
+    if(Configuration::get('SHOWCASE_USE_IMG_TITLE'))
+      $conf['showcase_img_use_title'] = true;
+    else
+      $conf['showcase_img_use_title'] = false;
+
+    if(Configuration::get('SHOWCASE_THBS_ALIGN') == 'left')
+      $conf['showcase_thumbs_align'] = 'nivo-controlNav-left';
+    else
+      $conf['showcase_thumbs_align'] = 'nivo-controlNav-right';
+
+    if(Configuration::get('SHOWCASE_THBS_FADEIN'))
+      $conf['showcase_thumbs_fadeIn'] = true;
+    else
+      $conf['showcase_thumbs_fadeIn'] = false;
+
     $smarty->assign('conf', $conf);
     $smarty->assign('slides', $slides);
-      
+
 		return $this->display(__FILE__, '/tpl/showcase.tpl');
 	}
 }
